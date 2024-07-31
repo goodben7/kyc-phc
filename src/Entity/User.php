@@ -21,11 +21,11 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
     normalizationContext: ['groups' => 'user:get'], 
     operations:[
         new Get(
-            //security: 'is_granted("ROLE_USER_DETAILS")',
+            security: 'is_granted("ROLE_USER_DETAILS")',
             provider: ItemProvider::class
         ),
         new GetCollection(
-            //security: 'is_granted("ROLE_USER_LIST")',
+            security: 'is_granted("ROLE_USER_LIST")',
             provider: CollectionProvider::class
         ),
     ]
