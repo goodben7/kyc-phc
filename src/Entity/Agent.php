@@ -7,9 +7,11 @@ use ApiPlatform\Metadata\Get;
 use App\Doctrine\IdGenerator;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Delete;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\AgentRepository;
 use App\State\CreateAgentProcessor;
+use App\State\DeleteAgentProcessor;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Doctrine\Orm\State\ItemProvider;
@@ -42,6 +44,10 @@ use ApiPlatform\Doctrine\Common\State\PersistProcessor;
             security: 'is_granted("ROLE_AGENT_UPDATE")',
             processor: PersistProcessor::class,
         ),
+        new Delete(
+            security: 'is_granted("ROLE_AGENT_DELETE")',
+            processor: DeleteAgentProcessor::class
+        )
     ]
 )]
 class Agent
@@ -142,6 +148,10 @@ class Agent
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(groups: ['agent:get'])]
     private ?string $address2 = null;
+
+    #[ORM\Column(nullable: true)]
+    #[Groups(groups: ['agent:get'])]
+    private ?bool $deleted = false;
 
     public function getId(): ?string
     {
@@ -408,6 +418,18 @@ class Agent
     {
         $this->fullName = ucfirst($this->firstName) . ' ' . strtoupper($this->postName) . ' ' . strtoupper($this->lastName);
     
+        return $this;
+    }
+
+    public function isDeleted(): ?bool
+    {
+        return $this->deleted;
+    }
+
+    public function setDeleted(?bool $deleted): static
+    {
+        $this->deleted = $deleted;
+
         return $this;
     }
 }

@@ -8,7 +8,9 @@ use App\Model\NewAgentModel;
 use App\Message\Query\GetUserDetails;
 use App\Message\Query\QueryBusInterface;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Exception\UnavailableDataException;
 use Symfony\Bundle\SecurityBundle\Security;
+use App\Exception\UnauthorizedActionException;
 
 class AgentManager
 {
@@ -52,5 +54,30 @@ class AgentManager
         $this->em->flush();
 
         return $a;
+    }
+
+    private function findAgnet(string $agentId): Agent 
+    {
+        $agent = $this->em->find(Agent::class, $agentId);
+
+        if (null === $agent) {
+            throw new UnavailableDataException(sprintf('cannot find agent with id: %s', $agentId));
+        }
+
+        return $agent; 
+    }
+
+    public function delete(string $agentId) {
+        $user = $this->findAgnet($agentId);
+
+        if ($user->isDeleted()) {
+            throw new UnauthorizedActionException('this action is not allowed');
+        }
+
+        $user->setDeleted(true);
+        $user->setUpdatedAt(new \DateTimeImmutable('now'));
+
+        $this->em->persist($user);
+        $this->em->flush();
     }
 }
