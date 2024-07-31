@@ -67,6 +67,12 @@ class Agent
     #[ORM\Column(length: 255)]
     private ?string $identificationNumber = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $address = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $address2 = null;
+
     public function getId(): ?string
     {
         return $this->id;
@@ -262,5 +268,35 @@ class Agent
         $this->identificationNumber = $identificationNumber;
 
         return $this;
+    }
+
+    public function getAddress(): ?string
+    {
+        return $this->address;
+    }
+
+    public function setAddress(?string $address): static
+    {
+        $this->address = $address;
+
+        return $this;
+    }
+
+    public function getAddress2(): ?string
+    {
+        return $this->address2;
+    }
+
+    public function setAddress2(?string $address2): static
+    {
+        $this->address2 = $address2;
+
+        return $this;
+    }
+
+    #[ORM\PreUpdate]
+    public function updateUpdatedAt(): void
+    {
+        $this->updatedAt = new \DateTimeImmutable();
     }
 }
