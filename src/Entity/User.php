@@ -17,6 +17,7 @@ use App\State\ChangeUserPasswordProcessor;
 use ApiPlatform\Doctrine\Orm\State\ItemProvider;
 use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Doctrine\Orm\State\CollectionProvider;
+use ApiPlatform\Doctrine\Common\State\PersistProcessor;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
@@ -45,6 +46,11 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
             security: 'is_granted("ROLE_USER_CHANGE_PWD", object)',
             input: ChangePasswordDto::class,
             processor: ChangeUserPasswordProcessor::class,
+        ),
+        new Patch(
+            security: 'is_granted("ROLE_USER_EDIT")',
+            denormalizationContext: ['groups' => 'user:patch'],
+            processor: PersistProcessor::class,
         ),
     ]
 )]
@@ -83,11 +89,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $plainPassword;
 
     #[ORM\Column(length: 15)]
-    #[Groups(groups: ['user:get'])]
+    #[Groups(groups: ['user:get', 'user:patch'])]
     private ?string $phone = null;
 
     #[ORM\Column(length: 120, nullable: true)]
-    #[Groups(groups: ['user:get'])]
+    #[Groups(groups: ['user:get', 'user:patch'])]
     private ?string $displayName = null;
 
     #[ORM\Column]
@@ -245,6 +251,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function updateUpdatedAt(): void
     {
         $this->updatedAt = new \DateTimeImmutable();
+    }
+
+    #[ORM\PreUpdate]
+    public function updateUsername(): void
+    {
+        $this->username = $this->phone;
     }
 
     /**
