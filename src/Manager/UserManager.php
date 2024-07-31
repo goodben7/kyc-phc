@@ -7,6 +7,7 @@ use App\Model\NewUserModel;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Exception\UnavailableDataException;
 use App\Exception\InvalidActionInputException;
+use App\Exception\UnauthorizedActionException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserManager
@@ -67,6 +68,20 @@ class UserManager
         }
 
         return $user; 
+    }
+
+    public function delete(string $userId) {
+        $user = $this->findUser($userId);
+
+        if ($user->isDeleted()) {
+            throw new UnauthorizedActionException('this action is not allowed');
+        }
+
+        $user->setDeleted(true);
+        $user->setUpdatedAt(new \DateTimeImmutable('now'));
+
+        $this->em->persist($user);
+        $this->em->flush();
     }
 
     public function changePassword(string $userId, string $actualPassword, string $newPassword): User 

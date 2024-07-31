@@ -8,9 +8,11 @@ use App\Doctrine\IdGenerator;
 use ApiPlatform\Metadata\Post;
 use App\Dto\ChangePasswordDto;
 use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Delete;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
 use App\State\CreateUserProcessor;
+use App\State\DeleteUserProcessor;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
 use App\State\ChangeUserPasswordProcessor;
@@ -52,6 +54,10 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
             denormalizationContext: ['groups' => 'user:patch'],
             processor: PersistProcessor::class,
         ),
+        new Delete(
+            security: 'is_granted("ROLE_USER_DELETE")',
+            processor: DeleteUserProcessor::class
+        )
     ]
 )]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
