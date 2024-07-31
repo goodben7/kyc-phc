@@ -14,6 +14,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     const ID_PREFIX = "US";
 
+    const ROLE_SUPER_ADMIN = 'ROLE_SUPER_ADMIN';
+    const ROLE_ADMIN = 'ROLE_ADMIN';
+    const ROLE_RECRUITER = 'ROLE_RECRUITER';
+
     #[ORM\Id]
     #[ORM\GeneratedValue( strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(IdGenerator::class)]
@@ -35,6 +39,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
+    private ?string $plainPassword;
+
     #[ORM\Column(length: 15)]
     private ?string $phone = null;
 
@@ -42,13 +48,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $displayName = null;
 
     #[ORM\Column]
-    private ?bool $deleted = null;
+    private ?bool $deleted = false;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $code = null;
 
     public function getId(): ?string
     {
@@ -189,5 +198,46 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function updateUpdatedAt(): void
     {
         $this->updatedAt = new \DateTimeImmutable();
+    }
+
+    /**
+     * Get the value of plainPassword
+     */ 
+    public function getPlainPassword()
+    {
+        return $this->plainPassword;
+    }
+
+    /**
+     * Set the value of plainPassword
+     *
+     * @return  self
+     */ 
+    public function setPlainPassword($plainPassword)
+    {
+        $this->plainPassword = $plainPassword;
+
+        return $this;
+    }
+
+    public static function getAvailablesRoles(): array 
+    {
+        return [ 
+            'Super Administrateur' => self::ROLE_SUPER_ADMIN,
+            'Administrateur' => self::ROLE_ADMIN,
+            'Enrôleur' => self::ROLE_RECRUITER
+        ];
+    }
+
+    public function getCode(): ?string
+    {
+        return $this->code;
+    }
+
+    public function setCode(?string $code): static
+    {
+        $this->code = $code;
+
+        return $this;
     }
 }
