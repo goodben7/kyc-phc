@@ -17,6 +17,7 @@ security:
             - ROLE_USER_CHANGE_PWD
             - ROLE_USER_EDIT
             - ROLE_USER_DELETE
+            - ROLE_AGENT_CREATE
         ROLE_SUPER_ADMIN:
             - ROLE_USER_DETAILS
             - ROLE_USER_LIST
@@ -25,6 +26,7 @@ security:
             - ROLE_USER_DETAILS
             - ROLE_USER_CHANGE_PWD
             - ROLE_USER_EDIT
+            - ROLE_AGENT_CREATE
 
 
     firewalls:

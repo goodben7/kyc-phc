@@ -2,75 +2,127 @@
 
 namespace App\Entity;
 
+use App\Model\NewAgentModel;
 use App\Doctrine\IdGenerator;
+use ApiPlatform\Metadata\Post;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\AgentRepository;
+use App\State\CreateAgentProcessor;
+use ApiPlatform\Metadata\ApiResource;
+use Symfony\Component\Serializer\Annotation\Groups;
+
 
 #[ORM\Entity(repositoryClass: AgentRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_IDENTIFICATION_NUMBER', fields: ['identificationNumber'])]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EXTERNAL_REFERENCE_ID', fields: ['externalReferenceId'])]
+#[ORM\HasLifecycleCallbacks]
+#[ApiResource(
+    normalizationContext: ['groups' => 'agent:get'],
+    operations: [
+        new Post(
+            security: 'is_granted("ROLE_AGENT_CREATE")',
+            input: NewAgentModel::class,
+            processor: CreateAgentProcessor::class,
+        )
+    ]
+)]
 class Agent
 {
     const ID_PREFIX = "AG";
+
+    const KYC_STATUS_VERIFIED = 'V';
+    const KYC_STATUS_NOT_VERIFIED = 'N';
+    const KYC_STATUS_IN_PROGRESS = 'P';
+
+    const GENDER_MALE = "M";
+    const GENDER_FEMALE = "F";
+    const GENDER_OTHER = "U";
+
+    const STATUS_VALIDATE = "V";
+    const STATUS_PENDING = "P";
+
+    const MARITAL_STATUS_MARRIED = "M";
+    const MARITAL_STATUS_DIVORCED = "D";
+    const MARITAL_STATUS_SINGLE = "S";
+    const MARITAL_STATUS_WIDOWER = "W";
 
     #[ORM\Id]
     #[ORM\GeneratedValue( strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(IdGenerator::class)]
     #[ORM\Column(length: 16)]
+    #[Groups(groups: ['agent:get'])]
     private ?string $id = null;
 
     #[ORM\Column(length: 30)]
+    #[Groups(groups: ['agent:get'])]
     private ?string $firstName = null;
 
     #[ORM\Column(length: 30)]
+    #[Groups(groups: ['agent:get'])]
     private ?string $lastName = null;
 
     #[ORM\Column(length: 30)]
+    #[Groups(groups: ['agent:get'])]
     private ?string $postName = null;
 
     #[ORM\Column(length: 120)]
+    #[Groups(groups: ['agent:get'])]
     private ?string $fullName = null;
 
     #[ORM\Column(length: 2)]
+    #[Groups(groups: ['agent:get'])]
     private ?string $country = null;
 
     #[ORM\Column]
+    #[Groups(groups: ['agent:get'])]
     private ?\DateTimeImmutable $birthday = null;
 
     #[ORM\Column(length: 1)]
+    #[Groups(groups: ['agent:get'])]
     private ?string $kycStatus = null;
 
     #[ORM\Column(length: 1)]
+    #[Groups(groups: ['agent:get'])]
     private ?string $maritalStatus = null;
 
     #[ORM\Column(length: 1)]
+    #[Groups(groups: ['agent:get'])]
     private ?string $gender = null;
 
     #[ORM\Column(length: 1)]
+    #[Groups(groups: ['agent:get'])]
     private ?string $status = null;
 
     #[ORM\Column]
+    #[Groups(groups: ['agent:get'])]
     private ?\DateTimeImmutable $createdAt = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(groups: ['agent:get'])]
     private ?string $externalReferenceId = null;
 
     #[ORM\Column(length: 16)]
+    #[Groups(groups: ['agent:get'])]
     private ?string $createdBy = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(groups: ['agent:get'])]
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\Column(length: 16, nullable: true)]
+    #[Groups(groups: ['agent:get'])]
     private ?string $updatedBy = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(groups: ['agent:get'])]
     private ?string $identificationNumber = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(groups: ['agent:get'])]
     private ?string $address = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(groups: ['agent:get'])]
     private ?string $address2 = null;
 
     public function getId(): ?string
@@ -215,7 +267,7 @@ class Agent
         return $this->externalReferenceId;
     }
 
-    public function setExternalReferenceId(string $externalReferenceId): static
+    public function setExternalReferenceId(?string $externalReferenceId): static
     {
         $this->externalReferenceId = $externalReferenceId;
 
@@ -298,5 +350,46 @@ class Agent
     public function updateUpdatedAt(): void
     {
         $this->updatedAt = new \DateTimeImmutable();
+    }
+
+    public static function getKycStatusAsChoices(): array {
+        return [
+            "in-progress" => self::KYC_STATUS_IN_PROGRESS,
+            "verified" => self::KYC_STATUS_VERIFIED,
+            "not verified" => self::KYC_STATUS_NOT_VERIFIED,
+        ];
+    }
+
+    public static function getGenderAsChoices(): array {
+        return [
+            "Masculin" => self::GENDER_MALE,
+            "Feminin" => self::GENDER_FEMALE,
+            "Autres" => self::GENDER_OTHER,
+        ];
+    }
+
+    public static function getStatusAsChoices(): array {
+        return [
+            "validé" => self::STATUS_VALIDATE,
+            "en attente" => self::STATUS_PENDING,
+        ];
+    }
+
+    public static function getMaritalStatusAsChoices(): array {
+        return [
+            "Divorcé" => self::MARITAL_STATUS_DIVORCED,
+            "Marié" => self::MARITAL_STATUS_MARRIED,
+            "Célibataire" => self::MARITAL_STATUS_SINGLE,
+            "Veuf/Veuve" => self::MARITAL_STATUS_WIDOWER,
+        ];
+    }
+
+    #[ORM\PrePersist]
+    #[ORM\PreUpdate]
+    public function buildFullName()
+    {
+        $this->fullName = $this->firstName.' '.$this->postName.' '.$this->lastName;
+        
+        return $this;
     }
 }
