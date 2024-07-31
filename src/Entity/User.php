@@ -2,14 +2,34 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\Get;
 use App\Doctrine\IdGenerator;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Doctrine\Orm\State\ItemProvider;
+use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Doctrine\Orm\State\CollectionProvider;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_USERNAME', fields: ['username'])]
+#[ORM\HasLifecycleCallbacks]
+#[ApiResource(
+    normalizationContext: ['groups' => 'user:get'], 
+    operations:[
+        new Get(
+            //security: 'is_granted("ROLE_USER_DETAILS")',
+            provider: ItemProvider::class
+        ),
+        new GetCollection(
+            //security: 'is_granted("ROLE_USER_LIST")',
+            provider: CollectionProvider::class
+        ),
+    ]
+)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     const ID_PREFIX = "US";
@@ -22,15 +42,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\GeneratedValue( strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(IdGenerator::class)]
     #[ORM\Column(length: 16)]
+    #[Groups(groups: ['user:get'])]
     private ?string $id = null;
 
     #[ORM\Column(length: 180)]
+    #[Groups(groups: ['user:get'])]
     private ?string $username = null;
 
     /**
      * @var list<string> The user roles
      */
     #[ORM\Column]
+    #[Groups(groups: ['user:get'])]
     private array $roles = [];
 
     /**
@@ -42,21 +65,27 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $plainPassword;
 
     #[ORM\Column(length: 15)]
+    #[Groups(groups: ['user:get'])]
     private ?string $phone = null;
 
     #[ORM\Column(length: 120, nullable: true)]
+    #[Groups(groups: ['user:get'])]
     private ?string $displayName = null;
 
     #[ORM\Column]
+    #[Groups(groups: ['user:get'])]
     private ?bool $deleted = false;
 
     #[ORM\Column]
+    #[Groups(groups: ['user:get'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(groups: ['user:get'])]
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(groups: ['user:get'])]
     private ?string $code = null;
 
     public function getId(): ?string
