@@ -13,6 +13,7 @@ use App\Repository\AgentRepository;
 use App\State\CreateAgentProcessor;
 use App\State\DeleteAgentProcessor;
 use ApiPlatform\Metadata\ApiResource;
+use App\State\ValidateAgentProcessor;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Doctrine\Orm\State\ItemProvider;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -47,6 +48,13 @@ use ApiPlatform\Doctrine\Common\State\PersistProcessor;
         new Delete(
             security: 'is_granted("ROLE_AGENT_DELETE")',
             processor: DeleteAgentProcessor::class
+        ),
+        new Post(
+            denormalizationContext: ['groups' => 'agent:validate'],
+            uriTemplate: "agents/{id}/validation",
+            security: 'is_granted("ROLE_AGENT_VALIDATE")',
+            processor: ValidateAgentProcessor::class,
+            status: 200
         )
     ]
 )]

@@ -22,6 +22,7 @@ security:
             - ROLE_AGENT_LIST
             - ROLE_AGENT_UPDATE
             - ROLE_AGENT_DELETE
+            - ROLE_AGENT_VALIDATE
         ROLE_SUPER_ADMIN:
             - ROLE_USER_DETAILS
             - ROLE_USER_LIST

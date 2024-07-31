@@ -5,6 +5,7 @@ namespace App\Manager;
 use App\Entity\User;
 use App\Entity\Agent;
 use App\Model\NewAgentModel;
+use App\Exception\AgentException;
 use App\Message\Query\GetUserDetails;
 use App\Message\Query\QueryBusInterface;
 use Doctrine\ORM\EntityManagerInterface;
@@ -68,16 +69,31 @@ class AgentManager
     }
 
     public function delete(string $agentId) {
-        $user = $this->findAgnet($agentId);
+        $agent = $this->findAgnet($agentId);
 
-        if ($user->isDeleted()) {
+        if ($agent->isDeleted()) {
             throw new UnauthorizedActionException('this action is not allowed');
         }
 
-        $user->setDeleted(true);
-        $user->setUpdatedAt(new \DateTimeImmutable('now'));
+        $agent->setDeleted(true);
+        $agent->setUpdatedAt(new \DateTimeImmutable('now'));
 
-        $this->em->persist($user);
+        $this->em->persist($agent);
         $this->em->flush();
+    }
+
+    public function validateCustomer(string $agentId): Agent {
+        $agent = $this->findAgnet($agentId);
+
+        if ($agent->getStatus() === Agent::STATUS_VALIDATE) {
+            throw new AgentException("the agent is already validated");
+        }
+
+        $agent->setStatus(agent::STATUS_VALIDATE);
+
+        $this->em->persist($agent);
+        $this->em->flush();
+
+        return $agent;
     }
 }
