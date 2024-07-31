@@ -6,6 +6,7 @@ use App\Model\NewAgentModel;
 use ApiPlatform\Metadata\Get;
 use App\Doctrine\IdGenerator;
 use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Patch;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\AgentRepository;
 use App\State\CreateAgentProcessor;
@@ -14,7 +15,7 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Doctrine\Orm\State\ItemProvider;
 use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Doctrine\Orm\State\CollectionProvider;
-
+use ApiPlatform\Doctrine\Common\State\PersistProcessor;
 
 #[ORM\Entity(repositoryClass: AgentRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_IDENTIFICATION_NUMBER', fields: ['identificationNumber'])]
@@ -35,7 +36,12 @@ use ApiPlatform\Doctrine\Orm\State\CollectionProvider;
             security: 'is_granted("ROLE_AGENT_CREATE")',
             input: NewAgentModel::class,
             processor: CreateAgentProcessor::class,
-        )
+        ),
+        new Patch(
+            denormalizationContext: ['groups' => 'agent:patch'],
+            security: 'is_granted("ROLE_AGENT_UPDATE")',
+            processor: PersistProcessor::class,
+        ),
     ]
 )]
 class Agent
@@ -66,15 +72,15 @@ class Agent
     private ?string $id = null;
 
     #[ORM\Column(length: 30)]
-    #[Groups(groups: ['agent:get'])]
+    #[Groups(groups: ['agent:get', 'agent:patch'])]
     private ?string $firstName = null;
 
     #[ORM\Column(length: 30)]
-    #[Groups(groups: ['agent:get'])]
+    #[Groups(groups: ['agent:get', 'agent:patch'])]
     private ?string $lastName = null;
 
     #[ORM\Column(length: 30)]
-    #[Groups(groups: ['agent:get'])]
+    #[Groups(groups: ['agent:get', 'agent:patch'])]
     private ?string $postName = null;
 
     #[ORM\Column(length: 120)]
@@ -82,11 +88,11 @@ class Agent
     private ?string $fullName = null;
 
     #[ORM\Column(length: 2)]
-    #[Groups(groups: ['agent:get'])]
+    #[Groups(groups: ['agent:get', 'agent:patch'])]
     private ?string $country = null;
 
     #[ORM\Column]
-    #[Groups(groups: ['agent:get'])]
+    #[Groups(groups: ['agent:get', 'agent:patch'])]
     private ?\DateTimeImmutable $birthday = null;
 
     #[ORM\Column(length: 1)]
@@ -94,11 +100,11 @@ class Agent
     private ?string $kycStatus = null;
 
     #[ORM\Column(length: 1)]
-    #[Groups(groups: ['agent:get'])]
+    #[Groups(groups: ['agent:get', 'agent:patch'])]
     private ?string $maritalStatus = null;
 
     #[ORM\Column(length: 1)]
-    #[Groups(groups: ['agent:get'])]
+    #[Groups(groups: ['agent:get', 'agent:patch'])]
     private ?string $gender = null;
 
     #[ORM\Column(length: 1)]
