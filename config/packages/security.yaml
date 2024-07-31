@@ -18,15 +18,21 @@ security:
             - ROLE_USER_EDIT
             - ROLE_USER_DELETE
             - ROLE_AGENT_CREATE
+            - ROLE_AGENT_DETAILS
+            - ROLE_AGENT_LIST
         ROLE_SUPER_ADMIN:
             - ROLE_USER_DETAILS
             - ROLE_USER_LIST
             - ROLE_USER_CHANGE_PWD
+            - ROLE_AGENT_DETAILS
+            - ROLE_AGENT_LIST
         ROLE_RECRUITER:
             - ROLE_USER_DETAILS
             - ROLE_USER_CHANGE_PWD
             - ROLE_USER_EDIT
             - ROLE_AGENT_CREATE
+            - ROLE_AGENT_DETAILS
+            - ROLE_AGENT_LIST
 
 
     firewalls:

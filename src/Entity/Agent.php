@@ -3,13 +3,17 @@
 namespace App\Entity;
 
 use App\Model\NewAgentModel;
+use ApiPlatform\Metadata\Get;
 use App\Doctrine\IdGenerator;
 use ApiPlatform\Metadata\Post;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\AgentRepository;
 use App\State\CreateAgentProcessor;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Doctrine\Orm\State\ItemProvider;
 use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Doctrine\Orm\State\CollectionProvider;
 
 
 #[ORM\Entity(repositoryClass: AgentRepository::class)]
@@ -19,6 +23,14 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ApiResource(
     normalizationContext: ['groups' => 'agent:get'],
     operations: [
+        new Get(
+            security: 'is_granted("ROLE_AGENT_DETAILS")',
+            provider: ItemProvider::class
+        ),
+        new GetCollection(
+            security: 'is_granted("ROLE_AGENT_LIST")',
+            provider: CollectionProvider::class
+        ),
         new Post(
             security: 'is_granted("ROLE_AGENT_CREATE")',
             input: NewAgentModel::class,
