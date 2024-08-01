@@ -6,12 +6,16 @@ use ApiPlatform\Metadata\Get;
 use App\Doctrine\IdGenerator;
 use ApiPlatform\Metadata\Post;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
 use App\Repository\KycDocumentRepository;
 use App\State\VerifyKycDocumentProcessor;
+use ApiPlatform\Doctrine\Orm\Filter\DateFilter;
 use Symfony\Component\HttpFoundation\File\File;
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Doctrine\Orm\State\ItemProvider;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use ApiPlatform\Doctrine\Orm\State\CollectionProvider;
@@ -48,6 +52,15 @@ use ApiPlatform\Doctrine\Common\State\PersistProcessor;
         )
     ]
 )]
+#[ApiFilter(SearchFilter::class, properties: [
+    'id' => 'exact',
+    'agent' => 'exact',
+    'type' => 'exact',
+    'status' => 'exact',
+    'documentRefNumber' => 'start',
+])]
+#[ApiFilter(OrderFilter::class, properties: ['uploadedAt', 'updatedAt'])]
+#[ApiFilter(DateFilter::class, properties: ['uploadedAt', 'updatedAt'])]
 class KycDocument
 {
     const ID_PREFIX = "KD";
