@@ -4,6 +4,7 @@ namespace App\Manager;
 
 use App\Entity\User;
 use App\Entity\Agent;
+use App\Entity\KycDocument;
 use App\Model\NewAgentModel;
 use App\Exception\AgentException;
 use App\Message\Query\GetUserDetails;
@@ -82,7 +83,7 @@ class AgentManager
         $this->em->flush();
     }
 
-    public function validateCustomer(string $agentId): Agent {
+    public function validateAgent(string $agentId): Agent {
         $agent = $this->findAgnet($agentId);
 
         $userId = $this->security->getUser()->getUserIdentifier();
@@ -103,5 +104,19 @@ class AgentManager
         $this->em->flush();
 
         return $agent;
+    }
+
+    public function validateKycDocument(KycDocument $document, bool $validation = true): KycDocument {
+
+        if ($document->getStatus() !== KycDocument::STATUS_PENDING) {
+            throw new AgentException('you are not allowed to re-validate this document');
+        }
+
+        $document->setStatus($validation ? KycDocument::STATUS_VERIFIED : KycDocument::STATUS_REFUSED);
+
+        $this->em->persist($document);
+        $this->em->flush();
+
+        return $document;
     }
 }

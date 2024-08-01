@@ -26,6 +26,7 @@ security:
             - ROLE_KYCDOC_CREATE
             - ROLE_KYCDOC_DETAILS
             - ROLE_KYCDOC_LIST
+            - ROLE_KYCDOC_VERIFY
         ROLE_SUPER_ADMIN:
             - ROLE_USER_DETAILS
             - ROLE_USER_LIST

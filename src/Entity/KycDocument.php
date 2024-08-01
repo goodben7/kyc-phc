@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
 use App\Repository\KycDocumentRepository;
+use App\State\VerifyKycDocumentProcessor;
 use Symfony\Component\HttpFoundation\File\File;
 use ApiPlatform\Doctrine\Orm\State\ItemProvider;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -36,6 +37,14 @@ use ApiPlatform\Doctrine\Common\State\PersistProcessor;
             security: 'is_granted("ROLE_KYCDOC_CREATE")',
             inputFormats: ['multipart' => ['multipart/form-data']],
             processor: PersistProcessor::class,
+        ),
+        new Post(
+            denormalizationContext: ['groups' => 'kycdoc:validate'],
+            uriTemplate: "kyc_documents/{id}/verify",
+            security: 'is_granted("ROLE_KYCDOC_VERIFY")',
+            processor: VerifyKycDocumentProcessor::class,
+            validationContext: ['groups' => ['verify_doc']],
+            status: 200
         )
     ]
 )]
@@ -107,6 +116,12 @@ class KycDocument
 
     #[Groups(groups: ['kycdoc:get'])]
     private ?string $contentUrl;
+
+    #[Assert\Type('bool', groups: ['verify_doc'])]
+    #[Assert\NotBlank(groups: ['verify_doc'])]
+    #[Assert\NotNull(groups: ['verify_doc'])]
+    #[Groups(groups: ['kycdoc:validate'])]
+    public bool $verified;
 
     public function getId(): ?string
     {
