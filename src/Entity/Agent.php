@@ -8,6 +8,8 @@ use App\Doctrine\IdGenerator;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Delete;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\AgentRepository;
 use App\State\CreateAgentProcessor;
@@ -168,6 +170,17 @@ class Agent
     #[ORM\Column(nullable: true)]
     #[Groups(groups: ['agent:get'])]
     private ?\DateTimeImmutable $validatedAt = null;
+
+    /**
+     * @var Collection<int, KycDocument>
+     */
+    #[ORM\OneToMany(targetEntity: KycDocument::class, mappedBy: 'agent')]
+    private Collection $kycDocuments;
+
+    public function __construct()
+    {
+        $this->kycDocuments = new ArrayCollection();
+    }
 
     public function getId(): ?string
     {
@@ -469,6 +482,36 @@ class Agent
     public function setValidatedAt(?\DateTimeImmutable $validatedAt): static
     {
         $this->validatedAt = $validatedAt;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, KycDocument>
+     */
+    public function getKycDocuments(): Collection
+    {
+        return $this->kycDocuments;
+    }
+
+    public function addKycDocument(KycDocument $kycDocument): static
+    {
+        if (!$this->kycDocuments->contains($kycDocument)) {
+            $this->kycDocuments->add($kycDocument);
+            $kycDocument->setAgent($this);
+        }
+
+        return $this;
+    }
+
+    public function removeKycDocument(KycDocument $kycDocument): static
+    {
+        if ($this->kycDocuments->removeElement($kycDocument)) {
+            // set the owning side to null (unless already changed)
+            if ($kycDocument->getAgent() === $this) {
+                $kycDocument->setAgent(null);
+            }
+        }
 
         return $this;
     }
