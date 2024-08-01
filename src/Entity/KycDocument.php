@@ -2,14 +2,18 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\Get;
 use App\Doctrine\IdGenerator;
 use ApiPlatform\Metadata\Post;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
 use App\Repository\KycDocumentRepository;
 use Symfony\Component\HttpFoundation\File\File;
+use ApiPlatform\Doctrine\Orm\State\ItemProvider;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
+use ApiPlatform\Doctrine\Orm\State\CollectionProvider;
 use Symfony\Component\Validator\Constraints as Assert;
 use ApiPlatform\Doctrine\Common\State\PersistProcessor;
 
@@ -19,6 +23,14 @@ use ApiPlatform\Doctrine\Common\State\PersistProcessor;
 #[ApiResource(
     normalizationContext: ['groups' => 'kycdoc:get'],
     operations: [
+        new Get(
+            security: 'is_granted("ROLE_KYCDOC_DETAILS")',
+            provider: ItemProvider::class,
+        ),
+        new GetCollection(
+            security: 'is_granted("ROLE_KYCDOC_LIST")',
+            provider: CollectionProvider::class,
+        ),
         new Post(
             denormalizationContext: ['groups' => 'kycdoc:post'],
             security: 'is_granted("ROLE_KYCDOC_CREATE")',
