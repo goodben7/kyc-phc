@@ -161,6 +161,14 @@ class Agent
     #[Groups(groups: ['agent:get'])]
     private ?bool $deleted = false;
 
+    #[ORM\Column(length: 12, nullable: true)]
+    #[Groups(groups: ['agent:get'])]
+    private ?string $validatedBy = null;
+
+    #[ORM\Column(nullable: true)]
+    #[Groups(groups: ['agent:get'])]
+    private ?\DateTimeImmutable $validatedAt = null;
+
     public function getId(): ?string
     {
         return $this->id;
@@ -437,6 +445,30 @@ class Agent
     public function setDeleted(?bool $deleted): static
     {
         $this->deleted = $deleted;
+
+        return $this;
+    }
+
+    public function getValidatedBy(): ?string
+    {
+        return $this->validatedBy;
+    }
+
+    public function setValidatedBy(?string $validatedBy): static
+    {
+        $this->validatedBy = $validatedBy;
+
+        return $this;
+    }
+
+    public function getValidatedAt(): ?\DateTimeImmutable
+    {
+        return $this->validatedAt;
+    }
+
+    public function setValidatedAt(?\DateTimeImmutable $validatedAt): static
+    {
+        $this->validatedAt = $validatedAt;
 
         return $this;
     }

@@ -85,11 +85,19 @@ class AgentManager
     public function validateCustomer(string $agentId): Agent {
         $agent = $this->findAgnet($agentId);
 
+        $userId = $this->security->getUser()->getUserIdentifier();
+
+        /** @var User $user */
+        $user = $this->queries->ask(new GetUserDetails($userId));
+
         if ($agent->getStatus() === Agent::STATUS_VALIDATE) {
             throw new AgentException("the agent is already validated");
         }
 
         $agent->setStatus(agent::STATUS_VALIDATE);
+        $agent->setUpdatedAt(new \DateTimeImmutable('now'));
+        $agent->setValidatedAt(new \DateTimeImmutable('now'));
+        $agent->setValidatedBy($user->getId());
 
         $this->em->persist($agent);
         $this->em->flush();
