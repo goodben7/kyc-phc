@@ -3,11 +3,30 @@
 namespace App\Entity;
 
 use App\Doctrine\IdGenerator;
+use ApiPlatform\Metadata\Post;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\ApiResource;
 use App\Repository\KycDocumentRepository;
+use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
+use Symfony\Component\Validator\Constraints as Assert;
+use ApiPlatform\Doctrine\Common\State\PersistProcessor;
 
+#[Vich\Uploadable]
 #[ORM\Entity(repositoryClass: KycDocumentRepository::class)]
 #[ORM\HasLifecycleCallbacks]
+#[ApiResource(
+    normalizationContext: ['groups' => 'kycdoc:get'],
+    operations: [
+        new Post(
+            denormalizationContext: ['groups' => 'kycdoc:post'],
+            security: 'is_granted("ROLE_KYCDOC_CREATE")',
+            inputFormats: ['multipart' => ['multipart/form-data']],
+            processor: PersistProcessor::class,
+        )
+    ]
+)]
 class KycDocument
 {
     const ID_PREFIX = "KD";
@@ -28,31 +47,54 @@ class KycDocument
     #[ORM\GeneratedValue( strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(IdGenerator::class)]
     #[ORM\Column(length: 16)]
+    #[Groups(groups: ['kycdoc:get'])]
     private ?string $id = null;
 
+    #[Assert\NotNull()]
+    #[Assert\NotBlank()]
+    #[Assert\Choice(callback: "getTypeAsChoices")]
+    #[Groups(groups: ['kycdoc:get', 'kycdoc:post'])]
     #[ORM\Column(length: 5)]
     private ?string $type = null;
 
+    #[Assert\NotNull()]
+    #[Assert\NotBlank()]
+    #[Groups(groups: ['kycdoc:get', 'kycdoc:post'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $documentRefNumber = null;
 
     #[ORM\Column]
+    #[Groups(groups: ['kycdoc:get'])]
     private ?\DateTimeImmutable $uploadedAt = null;
 
     #[ORM\Column(length: 1)]
+    #[Groups(groups: ['kycdoc:get'])]
     private ?string $status = self::STATUS_PENDING;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(groups: ['kycdoc:get'])]
     private ?string $filePath = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(groups: ['kycdoc:get'])]
     private ?int $fileSize = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(groups: ['kycdoc:get'])]
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'kycDocuments')]
+    #[Groups(groups: ['kycdoc:get', 'kycdoc:post'])]
     private ?Agent $agent = null;
+
+    #[Assert\NotNull()]
+    #[Assert\NotBlank()]
+    #[Groups(groups: ['kycdoc:post'])]
+    #[Vich\UploadableField(mapping: 'media_object', fileNameProperty: 'filePath', size: 'fileSize')]
+    private ?File $file = null;
+
+    #[Groups(groups: ['kycdoc:get'])]
+    private ?string $contentUrl;
 
     public function getId(): ?string
     {
@@ -182,6 +224,50 @@ class KycDocument
     public function setAgent(?Agent $agent): static
     {
         $this->agent = $agent;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of contentUrl
+     */ 
+    public function getContentUrl()
+    {
+        return $this->contentUrl;
+    }
+
+    /**
+     * Set the value of contentUrl
+     *
+     * @return  self
+     */ 
+    public function setContentUrl($contentUrl)
+    {
+        $this->contentUrl = $contentUrl;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of file
+     */ 
+    public function getFile()
+    {
+        return $this->file;
+    }
+
+    /**
+     * Set the value of file
+     *
+     * @return  self
+     */ 
+    public function setFile($file)
+    {
+        $this->file = $file;
+
+        if (null !== $file) {
+            $this->updatedAt = new \DateTimeImmutable('now');
+        }
 
         return $this;
     }
