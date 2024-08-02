@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Dto\CreateTasktDto;
+use App\Dto\CreateTaskstDto;
 use App\Model\TaskInterface;
 use App\Doctrine\IdGenerator;
 use ApiPlatform\Metadata\Post;
@@ -10,6 +11,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\TaskRepository;
 use App\State\CreateTaskProcessor;
+use App\State\CreateTasksProcessor;
 use ApiPlatform\Metadata\ApiResource;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -21,6 +23,12 @@ use Symfony\Component\Serializer\Annotation\Groups;
             security: 'is_granted("ROLE_AGENT_CREATE")',
             input: CreateTasktDto::class,
             processor: CreateTaskProcessor::class,
+        ),
+        new Post(
+            uriTemplate: "tasks/load",
+            security: 'is_granted("ROLE_AGENT_CREATE")',
+            input: CreateTaskstDto::class,
+            processor: CreateTasksProcessor::class,
         )
     ]
 )]
