@@ -3,17 +3,30 @@
 namespace App\Repository;
 
 use App\Entity\Agent;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @extends ServiceEntityRepository<Agent>
  */
 class AgentRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry, private EntityManagerInterface $em)
     {
         parent::__construct($registry, Agent::class);
+    }
+
+    public function findByExternalReferenceId(string $externalReferenceId): ?Agent
+    {
+        return $this->em->createQueryBuilder()
+            ->select('a')
+            ->from(Agent::class, 'a')
+            ->where('a.externalReferenceId = :externalReferenceId')
+            ->setParameter('externalReferenceId', $externalReferenceId)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
     }
 
 //    /**

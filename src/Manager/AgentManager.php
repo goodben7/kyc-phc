@@ -13,12 +13,14 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Exception\UnavailableDataException;
 use Symfony\Bundle\SecurityBundle\Security;
 use App\Exception\UnauthorizedActionException;
+use App\Repository\AgentRepository;
 
 class AgentManager
 {
     public function __construct(
         private EntityManagerInterface $em,
         private Security $security,
+        private AgentRepository $repository,
         private QueryBusInterface $queries,
     )
     {
@@ -69,6 +71,18 @@ class AgentManager
         return $agent; 
     }
 
+    public function findByExternalReferenceId(string $externalReferenceId): Agent 
+    {
+        $agent = $this->repository->findByExternalReferenceId($externalReferenceId);
+
+        if (null === $agent) {
+            throw new UnavailableDataException(sprintf('cannot find agent with external Reference Id: %s', $externalReferenceId));
+        }
+
+        return $agent; 
+    }
+
+
     public function delete(string $agentId) {
         $agent = $this->findAgnet($agentId);
 
@@ -81,6 +95,14 @@ class AgentManager
 
         $this->em->persist($agent);
         $this->em->flush();
+    }
+
+    public function update(Agent $agent): Agent
+    {
+        $this->em->persist($agent);
+        $this->em->flush();
+
+        return $agent;
     }
 
     public function validateAgent(string $agentId): Agent {

@@ -21,5 +21,9 @@ class Kernel extends BaseKernel
         $container->registerForAutoconfiguration(CommandHandlerInterface::class)
             ->addTag('messenger.message_handler', ['bus' => 'command.bus'])
         ;
+
+        $container->registerForAutoconfiguration(\App\Model\TaskRunnerInterface::class)
+            ->addTag('sync.task_runner')
+        ;
     }
 }

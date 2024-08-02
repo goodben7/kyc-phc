@@ -30,6 +30,7 @@ security:
         ROLE_SUPER_ADMIN:
             - ROLE_USER_DETAILS
             - ROLE_USER_LIST
+            - ROLE_USER_CREATE
             - ROLE_USER_CHANGE_PWD
             - ROLE_AGENT_DETAILS
             - ROLE_AGENT_LIST

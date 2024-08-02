@@ -20,14 +20,8 @@ final class MessengerCommandBus implements CommandBusInterface
     {
         try {
             return $this->handle($command);
-        } catch (HandlerFailedException $e) {
-            /** @var array{0: \Throwable} $exceptions */
-            $exceptions = $e->getWrappedExceptions();
-            if (count($exceptions) > 0) {
-                throw $exceptions[0];
-            } else {
-                throw $e;
-            }
+        } catch (HandlerFailedException $e) { 
+            throw $e;
         }
     }
 }

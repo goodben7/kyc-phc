@@ -2,54 +2,121 @@
 
 namespace App\Entity;
 
+use App\Dto\CreateTasktDto;
+use App\Model\TaskInterface;
 use App\Doctrine\IdGenerator;
+use ApiPlatform\Metadata\Post;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\TaskRepository;
+use App\State\CreateTaskProcessor;
+use ApiPlatform\Metadata\ApiResource;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: TaskRepository::class)]
-class Task
+#[ApiResource(
+    normalizationContext: ['groups' => 'task:get'],
+    operations: [
+        new Post(
+            security: 'is_granted("ROLE_AGENT_CREATE")',
+            input: CreateTasktDto::class,
+            processor: CreateTaskProcessor::class,
+        )
+    ]
+)]
+class Task implements TaskInterface
 {
     const ID_PREFIX = "TA";
+
+    const STATUS_IDLE = 'I';
+    const STATUS_INPROGRESS = 'P';
+    const STATUS_TERMINATED = 'T';
+    const STATUS_FAILED = 'F';
+
+    const METHOD_CREATE = 'C';
+    const METHOD_UPDATE = 'U'; 
+
+    const TYPE_AGENT ='AGENT';
+    const TYPE_DOCUMENT = 'DOCUMENT';
 
     #[ORM\Id]
     #[ORM\GeneratedValue( strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(IdGenerator::class)]
     #[ORM\Column(length: 16)]
+    #[Groups(groups: ['task:get'])]
     private ?string $id = null;
 
     #[ORM\Column(length: 30)]
+    #[Groups(groups: ['task:get'])]
     private ?string $type = null;
 
     #[ORM\Column(length: 15)]
+    #[Groups(groups: ['task:get'])]
     private ?string $method = null;
 
     #[ORM\Column(length: 1)]
+    #[Groups(groups: ['task:get'])]
     private ?string $status = null;
 
     #[ORM\Column(type: Types::JSON)]
+    #[Groups(groups: ['task:get'])]
     private array $data = [];
 
     #[ORM\Column]
+    #[Groups(groups: ['task:get'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(length: 16)]
+    #[Groups(groups: ['task:get'])]
     private ?string $createdBy = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(groups: ['task:get'])]
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\Column(length: 16, nullable: true)]
+    #[Groups(groups: ['task:get'])]
     private ?string $updatedBy = null;
 
     #[ORM\Column(length: 16, nullable: true)]
+    #[Groups(groups: ['task:get'])]
     private ?string $synchronizedBy = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(groups: ['task:get'])]
     private ?\DateTimeImmutable $synchronizedAt = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(groups: ['task:get'])]
     private ?string $message = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(groups: ['task:get'])]
+    private ?string $data1 = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(groups: ['task:get'])]
+    private ?string $data2 = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(groups: ['task:get'])]
+    private ?string $data3 = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(groups: ['task:get'])]
+    private ?string $data4 = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(groups: ['task:get'])]
+    private ?string $data5 = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(groups: ['task:get'])]
+    private ?string $data6 = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(groups: ['task:get'])]
+    private ?string $externalReferenceId = null;
 
     public function getId(): ?string
     {
@@ -184,6 +251,99 @@ class Task
     public function setMessage(?string $message): static
     {
         $this->message = $message;
+
+        return $this;
+    }
+
+    public function getData1(): ?string
+    {
+        return $this->data1;
+    }
+
+    public function setData1(?string $data1): static
+    {
+        $this->data1 = $data1;
+
+        return $this;
+    }
+
+    public function getData2(): ?string
+    {
+        return $this->data2;
+    }
+
+    public function setData2(?string $data2): static
+    {
+        $this->data2 = $data2;
+
+        return $this;
+    }
+
+    public function getData3(): ?string
+    {
+        return $this->data3;
+    }
+
+    public function setData3(?string $data3): static
+    {
+        $this->data3 = $data3;
+
+        return $this;
+    }
+
+    public function getData4(): ?string
+    {
+        return $this->data4;
+    }
+
+    public function setData4(?string $data4): static
+    {
+        $this->data4 = $data4;
+
+        return $this;
+    }
+
+    public function getData5(): ?string
+    {
+        return $this->data5;
+    }
+
+    public function setData5(?string $data5): static
+    {
+        $this->data5 = $data5;
+
+        return $this;
+    }
+
+    public function getData6(): ?string
+    {
+        return $this->data6;
+    }
+
+    public function setData6(?string $data6): static
+    {
+        $this->data6 = $data6;
+
+        return $this;
+    }
+
+    public function getDataValue(string $key, mixed $defaultValue = null): mixed
+    {
+        if (array_key_exists($key, $this->data)) {
+            return $this->data[$key];
+        }
+
+        return $defaultValue;
+    }
+
+    public function getExternalReferenceId(): ?string
+    {
+        return $this->externalReferenceId;
+    }
+
+    public function setExternalReferenceId(?string $externalReferenceId): static
+    {
+        $this->externalReferenceId = $externalReferenceId;
 
         return $this;
     }
