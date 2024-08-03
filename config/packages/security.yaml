@@ -27,6 +27,9 @@ security:
             - ROLE_KYCDOC_DETAILS
             - ROLE_KYCDOC_LIST
             - ROLE_KYCDOC_VERIFY
+            - ROLE_TASK_CREATE
+            - ROLE_TASK_DETAILS
+            - ROLE_TASK_LIST
         ROLE_SUPER_ADMIN:
             - ROLE_USER_DETAILS
             - ROLE_USER_LIST
@@ -36,6 +39,8 @@ security:
             - ROLE_AGENT_LIST
             - ROLE_KYCDOC_DETAILS
             - ROLE_KYCDOC_LIST
+            - ROLE_TASK_DETAILS
+            - ROLE_TASK_LIST
         ROLE_RECRUITER:
             - ROLE_USER_DETAILS
             - ROLE_USER_CHANGE_PWD
@@ -47,6 +52,9 @@ security:
             - ROLE_KYCDOC_CREATE
             - ROLE_KYCDOC_DETAILS
             - ROLE_KYCDOC_LIST
+            - ROLE_TASK_CREATE
+            - ROLE_TASK_DETAILS
+            - ROLE_TASK_LIST
 
 
     firewalls:

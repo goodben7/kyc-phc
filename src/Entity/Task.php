@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Dto\CreateTasktDto;
 use App\Dto\CreateTaskstDto;
 use App\Model\TaskInterface;
+use ApiPlatform\Metadata\Get;
 use App\Doctrine\IdGenerator;
 use ApiPlatform\Metadata\Post;
 use Doctrine\DBAL\Types\Types;
@@ -13,20 +14,31 @@ use App\Repository\TaskRepository;
 use App\State\CreateTaskProcessor;
 use App\State\CreateTasksProcessor;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Doctrine\Orm\State\ItemProvider;
 use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Doctrine\Orm\State\CollectionProvider;
 
 #[ORM\Entity(repositoryClass: TaskRepository::class)]
 #[ApiResource(
     normalizationContext: ['groups' => 'task:get'],
     operations: [
+        new Get(
+            security: 'is_granted("ROLE_TASK_DETAILS")',
+            provider: ItemProvider::class
+        ),
+        new GetCollection(
+            security: 'is_granted("ROLE_TASK_LIST")',
+            provider: CollectionProvider::class
+        ),
         new Post(
-            security: 'is_granted("ROLE_AGENT_CREATE")',
+            security: 'is_granted("ROLE_TASK_CREATE")',
             input: CreateTasktDto::class,
             processor: CreateTaskProcessor::class,
         ),
         new Post(
             uriTemplate: "tasks/load",
-            security: 'is_granted("ROLE_AGENT_CREATE")',
+            security: 'is_granted("ROLE_TASK_CREATE")',
             input: CreateTaskstDto::class,
             processor: CreateTasksProcessor::class,
         )
