@@ -3,7 +3,6 @@
 namespace App\State;
 
 use App\Entity\Task;
-use App\Model\NewTaskModel;
 use App\Manager\TaskManager;
 use ApiPlatform\Metadata\Operation;
 use Doctrine\ORM\EntityManagerInterface;
@@ -34,7 +33,6 @@ class CreateTasksProcessor implements ProcessorInterface
                 $task->setType($value->type);
                 $task->setMethod($value->method);
                 $task->setMethod($value->method);
-                $task->setData($value->data);
                 $task->setData($value->data);
                 $task->setCreatedBy($value->createdBy);
                 $task->setCreatedAt($value->createdAt);
