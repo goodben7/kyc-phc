@@ -49,6 +49,9 @@ class AgentManager
         $a->setExternalReferenceId($model->externalReferenceId);
         $a->setAddress($model->address);
         $a->setAddress2($model->address2);
+        $a->setContact($model->contact);
+        $a->setContatc2($model->contact2);
+        $a->setOldIdentificationNumber($model->oldIdentificationNumber);
 
         $this->em->persist($a);
 

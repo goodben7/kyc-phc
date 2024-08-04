@@ -59,4 +59,9 @@ class NewAgentModel {
     public ?string $createdBy = null;
 
     public ?string $externalReferenceId = null;
+    public ?string $oldIdentificationNumber = null;
+
+    public ?string $contact = null;
+
+    public ?string $contact2 = null;
 }

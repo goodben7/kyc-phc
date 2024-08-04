@@ -166,16 +166,16 @@ class Agent
     #[Groups(groups: ['agent:get'])]
     private ?string $updatedBy = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255,nullable: true)]
     #[Groups(groups: ['agent:get'])]
     private ?string $identificationNumber = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(groups: ['agent:get'])]
+    #[Groups(groups: ['agent:get', 'agent:patch'])]
     private ?string $address = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(groups: ['agent:get'])]
+    #[Groups(groups: ['agent:get', 'agent:patch'])]
     private ?string $address2 = null;
 
     #[ORM\Column(nullable: true)]
@@ -195,6 +195,18 @@ class Agent
      */
     #[ORM\OneToMany(targetEntity: KycDocument::class, mappedBy: 'agent')]
     private Collection $kycDocuments;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(groups: ['agent:get', 'agent:patch'])]
+    private ?string $oldIdentificationNumber = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(groups: ['agent:get', 'agent:patch'])]
+    private ?string $contact = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(groups: ['agent:get', 'agent:patch'])]
+    private ?string $contatc2 = null;
 
     public function __construct()
     {
@@ -531,6 +543,42 @@ class Agent
                 $kycDocument->setAgent(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getOldIdentificationNumber(): ?string
+    {
+        return $this->oldIdentificationNumber;
+    }
+
+    public function setOldIdentificationNumber(?string $oldIdentificationNumber): static
+    {
+        $this->oldIdentificationNumber = $oldIdentificationNumber;
+
+        return $this;
+    }
+
+    public function getContact(): ?string
+    {
+        return $this->contact;
+    }
+
+    public function setContact(?string $contact): static
+    {
+        $this->contact = $contact;
+
+        return $this;
+    }
+
+    public function getContatc2(): ?string
+    {
+        return $this->contatc2;
+    }
+
+    public function setContatc2(?string $contatc2): static
+    {
+        $this->contatc2 = $contatc2;
 
         return $this;
     }

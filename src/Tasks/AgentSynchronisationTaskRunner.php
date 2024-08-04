@@ -85,7 +85,10 @@ class AgentSynchronisationTaskRunner  implements TaskRunnerInterface
             $model->createdBy = $task->getDataValue('createdBy');
             $model->address = $task->getDataValue('address');
             $model->address2 = $task->getDataValue('address2');
+            $model->contact = $task->getDataValue('contact');
+            $model->contact2 = $task->getDataValue('contact2');
             $model->externalReferenceId = $task->getDataValue('externalReferenceId');
+            $model->oldIdentificationNumber = $task->getDataValue('oldIdentificationNumber');
 
             $this->managerRegistry->resetManager();
             $this->manager->createAgent($model);
@@ -124,6 +127,9 @@ class AgentSynchronisationTaskRunner  implements TaskRunnerInterface
             $agent->setUpdatedAt($updatedAt);
             $agent->setAddress($task->getDataValue('address'));
             $agent->setAddress2($task->getDataValue('address2'));
+            $agent->setContact($task->getDataValue('contatc'));
+            $agent->setContatc2($task->getDataValue('contatc2'));
+            $agent->setOldIdentificationNumber($task->getDataValue('oldIdentificationNumber'));
     
             $this->manager->update($agent);
     
