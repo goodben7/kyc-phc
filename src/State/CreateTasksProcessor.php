@@ -2,17 +2,23 @@
 
 namespace App\State;
 
-use ApiPlatform\Metadata\Operation;
-use ApiPlatform\State\ProcessorInterface;
-use App\Manager\TaskManager;
+use App\Entity\Task;
 use App\Model\NewTaskModel;
+use App\Manager\TaskManager;
+use ApiPlatform\Metadata\Operation;
+use Doctrine\ORM\EntityManagerInterface;
+use ApiPlatform\State\ProcessorInterface;
+use App\Message\Command\CommandBusInterface;
+use App\Message\Command\CheckPendingTasksCommand;
 
 class CreateTasksProcessor implements ProcessorInterface
 {
 
-    public function __construct(private TaskManager $manager)
+    public function __construct(
+        private TaskManager $manager,
+        private EntityManagerInterface $em,
+        private CommandBusInterface $bus,)
     {
-        
     }
 
     /**
@@ -23,24 +29,33 @@ class CreateTasksProcessor implements ProcessorInterface
         foreach($data as $row){
             foreach($row as $value)
             {
-                $model = new NewTaskModel();
-                $model->type = $value->type;
-                $model->method = $value->method;
-                $model->data = $value->data;
-                $model->createdBy = $value->createdBy;
-                $model->externalReferenceId = $value->externalReferenceId;
-                $model->createdAt = $value->createdAt;
-                $model->data1 = $value->data1;
-                $model->data2 = $value->data2;
-                $model->data3 = $value->data3;
-                $model->data4 = $value->data4;
-                $model->data5 = $value->data5;
-                $model->data6 = $value->data6;
+                $task = new Task();
 
-                $this->manager->create($model);
+                $task->setType($value->type);
+                $task->setMethod($value->method);
+                $task->setMethod($value->method);
+                $task->setData($value->data);
+                $task->setData($value->data);
+                $task->setCreatedBy($value->createdBy);
+                $task->setCreatedAt($value->createdAt);
+                $task->setExternalReferenceId($value->externalReferenceId);
+                $task->setStatus(Task::STATUS_IDLE);
+                $task->setData1($value->data1);
+                $task->setData2($value->data2);
+                $task->setData3($value->data3);
+                $task->setData4($value->data4);
+                $task->setData5($value->data5);
+                $task->setData6($value->data6);
+
+                $this->em->persist($task);
+                
             }   
         }
+
+        $this->em->flush();
+
+        $this->bus->dispatch(new CheckPendingTasksCommand());
         
-        return $model;
+        return $task;
     }
 }

@@ -57,6 +57,20 @@ class TaskRepository extends ServiceEntityRepository
             ->getOneOrNullResult() 
         ; 
     }
+
+    /**
+     * @return Task[] 
+     */
+    public function getPendingTasks(): array
+    {
+        return $this->createQueryBuilder('t')
+            ->Where('t.status = :status')
+            ->setParameter('status', Task::STATUS_IDLE)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+    
     //    /**
     //     * @return Task[] Returns an array of Task objects
     //     */

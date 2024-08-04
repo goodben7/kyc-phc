@@ -10,6 +10,7 @@ use App\Manager\AgentManager;
 use App\Model\TaskRunnerInterface;
 use App\Repository\TaskRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ManagerRegistry;
 use App\Exception\InvalidActionInputException;
 
 class AgentSynchronisationTaskRunner  implements TaskRunnerInterface
@@ -21,6 +22,7 @@ class AgentSynchronisationTaskRunner  implements TaskRunnerInterface
         private readonly LoggerInterface        $logger,
         private readonly AgentManager        $manager,
         private readonly TaskRepository $repository,
+        private readonly ManagerRegistry $managerRegistry,
     )
     {
     }
@@ -54,6 +56,7 @@ class AgentSynchronisationTaskRunner  implements TaskRunnerInterface
             }
 
         }catch(\Exception $e){
+            $this->managerRegistry->resetManager();
             $this->repository->updateTaskStatus($task->getId(), Task::STATUS_FAILED, $e->getMessage());
             $this->logger->info(sprintf('Agent Synchronisation Task Runner with ID %s failed', $task->getId()));
             $this->logger->error($e->getMessage());
@@ -84,11 +87,13 @@ class AgentSynchronisationTaskRunner  implements TaskRunnerInterface
             $model->address2 = $task->getDataValue('address2');
             $model->externalReferenceId = $task->getDataValue('externalReferenceId');
 
+            $this->managerRegistry->resetManager();
             $this->manager->createAgent($model);
 
             $this->repository->updateTaskStatus($task->getId(), Task::STATUS_TERMINATED, null);
     
         } catch (\Exception $e) {
+            $this->managerRegistry->resetManager();
             $this->repository->updateTaskStatus($task->getId(), Task::STATUS_FAILED, $e->getMessage());
             $this->logger->error('Error processing record: ' . json_encode($task->getData()) . ' - ' . $e->getMessage());
         }
@@ -125,6 +130,7 @@ class AgentSynchronisationTaskRunner  implements TaskRunnerInterface
             $this->repository->updateTaskStatus($task->getId(), Task::STATUS_TERMINATED, null);
 
         } catch (\Exception $e) {
+            $this->managerRegistry->resetManager();
             $this->repository->updateTaskStatus($task->getId(), Task::STATUS_FAILED, $e->getMessage());
             $this->logger->error('Error processing record: ' . json_encode($task->getData()) . ' - ' . $e->getMessage());
         }

@@ -18,6 +18,7 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Doctrine\Orm\State\ItemProvider;
 use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Doctrine\Orm\State\CollectionProvider;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: TaskRepository::class)]
 #[ApiResource(
@@ -67,26 +68,41 @@ class Task implements TaskInterface
     private ?string $id = null;
 
     #[ORM\Column(length: 30)]
+    #[Assert\NotNull]
+    #[Assert\NotBlank]
+    #[Assert\Choice(choices: [self::TYPE_AGENT, self::TYPE_DOCUMENT])]
     #[Groups(groups: ['task:get'])]
     private ?string $type = null;
 
     #[ORM\Column(length: 15)]
+    #[Assert\NotNull]
+    #[Assert\NotBlank]
+    #[Assert\Choice(choices: [self::METHOD_CREATE, self::METHOD_UPDATE])]
     #[Groups(groups: ['task:get'])]
     private ?string $method = null;
 
     #[ORM\Column(length: 1)]
+    #[Assert\NotNull]
+    #[Assert\NotBlank]
     #[Groups(groups: ['task:get'])]
-    private ?string $status = null;
+    private ?string $status = self::STATUS_IDLE;
 
     #[ORM\Column(type: Types::JSON)]
+    #[Assert\NotNull]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 16)]
     #[Groups(groups: ['task:get'])]
     private array $data = [];
 
     #[ORM\Column]
+    #[Assert\NotNull]
+    #[Assert\NotBlank]
     #[Groups(groups: ['task:get'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(length: 16)]
+    #[Assert\NotNull]
+    #[Assert\NotBlank]
     #[Groups(groups: ['task:get'])]
     private ?string $createdBy = null;
 
