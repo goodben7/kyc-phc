@@ -136,6 +136,10 @@ class KycDocument
     #[Groups(groups: ['kycdoc:validate'])]
     public bool $verified;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(groups: ['kycdoc:get', 'kycdoc:post'])]
+    private ?string $externalReferenceId = null;
+
     public function getId(): ?string
     {
         return $this->id;
@@ -308,6 +312,18 @@ class KycDocument
         if (null !== $file) {
             $this->updatedAt = new \DateTimeImmutable('now');
         }
+
+        return $this;
+    }
+
+    public function getExternalReferenceId(): ?string
+    {
+        return $this->externalReferenceId;
+    }
+
+    public function setExternalReferenceId(?string $externalReferenceId): static
+    {
+        $this->externalReferenceId = $externalReferenceId;
 
         return $this;
     }
