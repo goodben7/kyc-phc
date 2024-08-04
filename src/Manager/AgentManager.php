@@ -54,10 +54,6 @@ class AgentManager
         $a->setOldIdentificationNumber($model->oldIdentificationNumber);
 
         $this->em->persist($a);
-
-        $a->setIdentificationNumber($a->getId());
-
-        $this->em->persist($a);
         $this->em->flush();
 
         return $a;
@@ -124,11 +120,18 @@ class AgentManager
         $agent->setUpdatedAt(new \DateTimeImmutable('now'));
         $agent->setValidatedAt(new \DateTimeImmutable('now'));
         $agent->setValidatedBy($user->getId());
+        $agent->setIdentificationNumber($this->generateIdentificationNumber());
 
         $this->em->persist($agent);
         $this->em->flush();
 
         return $agent;
+    }
+
+    private function generateIdentificationNumber(): string
+    {
+        $randomHex = bin2hex(random_bytes(8));
+        return 'ID_' . strtoupper($randomHex);
     }
 
     public function validateKycDocument(KycDocument $document, bool $validation = true): KycDocument {
