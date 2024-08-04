@@ -12,10 +12,14 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\TaskRepository;
 use App\State\CreateTaskProcessor;
+use ApiPlatform\Metadata\ApiFilter;
 use App\State\CreateTasksProcessor;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Doctrine\Orm\Filter\DateFilter;
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Doctrine\Orm\State\ItemProvider;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Doctrine\Orm\State\CollectionProvider;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -45,6 +49,18 @@ use Symfony\Component\Validator\Constraints as Assert;
         )
     ]
 )]
+#[ApiFilter(SearchFilter::class, properties: [
+    'id' => 'exact',
+    'status' => 'exact',
+    'type' => 'exact',
+    'method' => 'exact',
+    'createdBy' => 'exact',
+    'updatedBy' => 'exact',
+    'synchronizedBy' => 'exact',
+    'externalReferenceId' => 'exact',
+])]
+#[ApiFilter(OrderFilter::class, properties: ['createdAt', 'updatedAt', 'synchronizedAt'])]
+#[ApiFilter(DateFilter::class, properties: ['createdAt', 'updatedAt', 'synchronizedAt'])]
 class Task implements TaskInterface
 {
     const ID_PREFIX = "TA";
