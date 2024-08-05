@@ -38,6 +38,8 @@ security:
             - ROLE_SITE_UPDATE
             - ROLE_AFFECTED_LOCATION_CREATE
             - ROLE_AFFECTED_LOCATION_UPDATE
+            - ROLE_CATEGORY_DETAILS
+            - ROLE_CATEGORY_LIST
         ROLE_SUPER_ADMIN:
             - ROLE_USER_DETAILS
             - ROLE_USER_LIST
@@ -57,6 +59,8 @@ security:
             - ROLE_SITE_UPDATE
             - ROLE_AFFECTED_LOCATION_CREATE
             - ROLE_AFFECTED_LOCATION_UPDATE
+            - ROLE_CATEGORY_DETAILS
+            - ROLE_CATEGORY_LIST
         ROLE_RECRUITER:
             - ROLE_USER_DETAILS
             - ROLE_USER_CHANGE_PWD
@@ -75,6 +79,8 @@ security:
             - ROLE_SITE_LIST
             - ROLE_AFFECTED_LOCATION_DETAILS
             - ROLE_AFFECTED_LOCATION_LIST
+            - ROLE_CATEGORY_DETAILS
+            - ROLE_CATEGORY_LIST
 
 
     firewalls:
