@@ -44,6 +44,8 @@ security:
             - ROLE_CATEGORY_UPDATE
             - ROLE_FUNCTION_DETAILS
             - ROLE_FUNCTION_LIST
+            - ROLE_FUNCTION_CREATE
+            - ROLE_FUNCTION_UPDATE
         ROLE_SUPER_ADMIN:
             - ROLE_USER_DETAILS
             - ROLE_USER_LIST
@@ -70,6 +72,8 @@ security:
             - ROLE_CATEGORY_UPDATE
             - ROLE_FUNCTION_DETAILS
             - ROLE_FUNCTION_LIST
+            - ROLE_FUNCTION_CREATE
+            - ROLE_FUNCTION_UPDATE
         ROLE_RECRUITER:
             - ROLE_USER_DETAILS
             - ROLE_USER_CHANGE_PWD
