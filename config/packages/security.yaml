@@ -34,6 +34,7 @@ security:
             - ROLE_SITE_LIST
             - ROLE_AFFECTED_LOCATION_DETAILS
             - ROLE_AFFECTED_LOCATION_LIST
+            - ROLE_SITE_CREATE
         ROLE_SUPER_ADMIN:
             - ROLE_USER_DETAILS
             - ROLE_USER_LIST
@@ -49,6 +50,7 @@ security:
             - ROLE_SITE_LIST
             - ROLE_AFFECTED_LOCATION_DETAILS
             - ROLE_AFFECTED_LOCATION_LIST
+            - ROLE_SITE_CREATE
         ROLE_RECRUITER:
             - ROLE_USER_DETAILS
             - ROLE_USER_CHANGE_PWD
