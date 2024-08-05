@@ -30,6 +30,8 @@ security:
             - ROLE_TASK_CREATE
             - ROLE_TASK_DETAILS
             - ROLE_TASK_LIST
+            - ROLE_SITE_DETAILS
+            - ROLE_SITE_LIST
         ROLE_SUPER_ADMIN:
             - ROLE_USER_DETAILS
             - ROLE_USER_LIST
@@ -41,6 +43,8 @@ security:
             - ROLE_KYCDOC_LIST
             - ROLE_TASK_DETAILS
             - ROLE_TASK_LIST
+            - ROLE_SITE_DETAILS
+            - ROLE_SITE_LIST
         ROLE_RECRUITER:
             - ROLE_USER_DETAILS
             - ROLE_USER_CHANGE_PWD
@@ -55,6 +59,8 @@ security:
             - ROLE_TASK_CREATE
             - ROLE_TASK_DETAILS
             - ROLE_TASK_LIST
+            - ROLE_SITE_DETAILS
+            - ROLE_SITE_LIST
 
 
     firewalls:
