@@ -2,12 +2,39 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\Get;
 use App\Doctrine\IdGenerator;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\ApiFilter;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
 use App\Repository\FunctionTitleRepository;
+use ApiPlatform\Doctrine\Orm\State\ItemProvider;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Doctrine\Orm\State\CollectionProvider;
 
 #[ORM\Entity(repositoryClass: FunctionTitleRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_CODE', fields: ['code'])]
+#[ApiResource(
+    normalizationContext: ['groups' => 'function:get'],
+    operations: [
+        new Get(
+            security: 'is_granted("ROLE_FUNCTION_DETAILS")',
+            provider: ItemProvider::class
+        ),
+        new GetCollection(
+            security: 'is_granted("ROLE_FUNCTION_LIST")',
+            provider: CollectionProvider::class
+        )
+    ]
+)]
+#[ApiFilter(SearchFilter::class, properties: [
+    'id' => 'exact',
+    'label' => 'ipartial',
+    'description' => 'ipartial',
+    'code' => 'exact',
+    'actived' => 'exact'
+])]
 class FunctionTitle
 {
     const ID_PREFIX = "FU";
