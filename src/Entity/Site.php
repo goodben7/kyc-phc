@@ -13,6 +13,8 @@ use ApiPlatform\Doctrine\Orm\State\ItemProvider;
 use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Doctrine\Orm\State\CollectionProvider;
 use ApiPlatform\Doctrine\Common\State\PersistProcessor;
+use ApiPlatform\Metadata\Patch;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: SiteRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_CODE', fields: ['code'])]
@@ -32,6 +34,11 @@ use ApiPlatform\Doctrine\Common\State\PersistProcessor;
             denormalizationContext: ['groups' => 'site:post'],
             processor: PersistProcessor::class,
         ),
+        new Patch(
+            security: 'is_granted("ROLE_SITE_UPDATE")',
+            denormalizationContext: ['groups' => 'site:patch'],
+            processor: PersistProcessor::class,
+        ),
     ]
 )]
 class Site
@@ -46,19 +53,21 @@ class Site
     private ?string $id = null;
 
     #[ORM\Column(length: 120)]
-    #[Groups(groups: ['site:get', 'site:post'])]
+    #[Assert\NotNull]
+    #[Assert\NotBlank]
+    #[Groups(groups: ['site:get', 'site:post', 'site:patch'])]
     private ?string $label = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(groups: ['site:get', 'site:post'])]
+    #[Groups(groups: ['site:get', 'site:post', 'site:patch'])]
     private ?string $description = null;
 
     #[ORM\Column(length: 30, nullable: true)]
-    #[Groups(groups: ['site:get', 'site:post'])]
+    #[Groups(groups: ['site:get', 'site:post', 'site:patch'])]
     private ?string $code = null;
 
     #[ORM\Column]
-    #[Groups(groups: ['site:get', 'site:post'])]
+    #[Groups(groups: ['site:get', 'site:post', 'site:patch'])]
     private ?bool $actived = true;
 
     public function getId(): ?string
