@@ -7,7 +7,13 @@ api_platform:
         jsonld: ['application/ld+json']
         jsonopenapi: ['application/vnd.openapi+json']
         html: ['text/html']
+    collection:
+        pagination:
+            enabled_parameter_name: pagination
+            items_per_page_parameter_name: itemsPerPage
     defaults:
+        pagination_client_enabled: true
+        pagination_client_items_per_page: true
         stateless: true
         cache_headers:
             vary: ['Content-Type', 'Authorization', 'Origin']
