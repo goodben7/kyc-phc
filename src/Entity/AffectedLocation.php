@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\Get;
 use App\Doctrine\IdGenerator;
+use ApiPlatform\Metadata\Post;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
@@ -11,6 +12,7 @@ use App\Repository\AffectedLocationRepository;
 use ApiPlatform\Doctrine\Orm\State\ItemProvider;
 use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Doctrine\Orm\State\CollectionProvider;
+use ApiPlatform\Doctrine\Common\State\PersistProcessor;
 
 #[ORM\Entity(repositoryClass: AffectedLocationRepository::class)]
 #[ApiResource(
@@ -23,7 +25,12 @@ use ApiPlatform\Doctrine\Orm\State\CollectionProvider;
         new GetCollection(
             security: 'is_granted("ROLE_AFFECTED_LOCATION_LIST")',
             provider: CollectionProvider::class
-        )
+        ),
+        new Post(
+            security: 'is_granted("ROLE_AFFECTED_LOCATION_CREATE")',
+            denormalizationContext: ['groups' => 'affected_location:post'],
+            processor: PersistProcessor::class,
+        ),
     ]
 )]
 class AffectedLocation
@@ -38,16 +45,20 @@ class AffectedLocation
     private ?string $id = null;
 
     #[ORM\Column(length: 120)]
-    #[Groups(groups: ['affected_location:get'])]
+    #[Groups(groups: ['affected_location:get', 'affected_location:post'])]
     private ?string $label = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(groups: ['affected_location:get'])]
+    #[Groups(groups: ['affected_location:get', 'affected_location:post'])]
     private ?string $description = null;
 
     #[ORM\Column(length: 30, nullable: true)]
-    #[Groups(groups: ['affected_location:get'])]
+    #[Groups(groups: ['affected_location:get', 'affected_location:post'])]
     private ?string $code = null;
+
+    #[ORM\Column]
+    #[Groups(groups: ['affected_location:get', 'affected_location:post'])]
+    private ?bool $actived = true;
 
     public function getId(): ?string
     {
@@ -86,6 +97,18 @@ class AffectedLocation
     public function setCode(?string $code): static
     {
         $this->code = $code;
+
+        return $this;
+    }
+
+    public function isActived(): ?bool
+    {
+        return $this->actived;
+    }
+
+    public function setActived(bool $actived): static
+    {
+        $this->actived = $actived;
 
         return $this;
     }
