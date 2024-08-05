@@ -128,7 +128,7 @@ class AgentSynchronisationTaskRunner  implements TaskRunnerInterface
             $agent->setAddress($task->getDataValue('address'));
             $agent->setAddress2($task->getDataValue('address2'));
             $agent->setContact($task->getDataValue('contatc'));
-            $agent->setContatc2($task->getDataValue('contatc2'));
+            $agent->setContact2($task->getDataValue('contatc2'));
             $agent->setOldIdentificationNumber($task->getDataValue('oldIdentificationNumber'));
     
             $this->manager->update($agent);

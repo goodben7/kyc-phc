@@ -18,6 +18,6 @@ class VerifyKycDocumentProcessor implements ProcessorInterface
      */
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = [])
     {
-        return $this->manager->validateKycDocument($data);
+        return $this->manager->validateKycDocument($uriVariables['id']);
     }
 }

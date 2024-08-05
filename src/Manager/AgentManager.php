@@ -50,7 +50,7 @@ class AgentManager
         $a->setAddress($model->address);
         $a->setAddress2($model->address2);
         $a->setContact($model->contact);
-        $a->setContatc2($model->contact2);
+        $a->setContact2($model->contact2);
         $a->setOldIdentificationNumber($model->oldIdentificationNumber);
 
         $this->em->persist($a);
@@ -134,7 +134,19 @@ class AgentManager
         return 'ID_' . strtoupper($randomHex);
     }
 
-    public function validateKycDocument(KycDocument $document, bool $validation = true): KycDocument {
+    private function findDocument(string $documentId): KycDocument 
+    {
+        $document = $this->em->find(KycDocument::class, $documentId);
+
+        if (null === $document) {
+            throw new UnavailableDataException(sprintf('cannot find KycDocument with id: %s', $documentId));
+        }
+
+        return $document; 
+    }
+
+    public function validateKycDocument(string $documentId, bool $validation = true): KycDocument {
+        $document = $this->findDocument($documentId);
 
         if ($document->getStatus() !== KycDocument::STATUS_PENDING) {
             throw new AgentException('you are not allowed to re-validate this document');

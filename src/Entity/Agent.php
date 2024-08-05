@@ -76,6 +76,8 @@ use ApiPlatform\Doctrine\Common\State\PersistProcessor;
     'validatedBy' => 'exact',
     'createdBy' => 'exact',
     'updatedBy' => 'exact',
+    'oldIdentificationNumber' => 'exact',
+    'identificationNumber' => 'exact',
 ])]
 #[ApiFilter(OrderFilter::class, properties: ['createdAt', 'updatedAt', 'validatedAt'])]
 #[ApiFilter(DateFilter::class, properties: ['createdAt', 'updatedAt', 'validatedAt'])]
@@ -182,7 +184,7 @@ class Agent
     #[Groups(groups: ['agent:get'])]
     private ?bool $deleted = false;
 
-    #[ORM\Column(length: 12, nullable: true)]
+    #[ORM\Column(length: 16, nullable: true)]
     #[Groups(groups: ['agent:get'])]
     private ?string $validatedBy = null;
 
@@ -206,7 +208,7 @@ class Agent
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(groups: ['agent:get', 'agent:patch'])]
-    private ?string $contatc2 = null;
+    private ?string $contact2 = null;
 
     public function __construct()
     {
@@ -571,14 +573,14 @@ class Agent
         return $this;
     }
 
-    public function getContatc2(): ?string
+    public function getContact2(): ?string
     {
-        return $this->contatc2;
+        return $this->contact2;
     }
 
-    public function setContatc2(?string $contatc2): static
+    public function setContact2(?string $contact2): static
     {
-        $this->contatc2 = $contatc2;
+        $this->contact2 = $contact2;
 
         return $this;
     }
