@@ -7,16 +7,19 @@ use App\Doctrine\IdGenerator;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Patch;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
 use App\Repository\AffectedLocationRepository;
 use ApiPlatform\Doctrine\Orm\State\ItemProvider;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Doctrine\Orm\State\CollectionProvider;
-use ApiPlatform\Doctrine\Common\State\PersistProcessor;
 use Symfony\Component\Validator\Constraints as Assert;
+use ApiPlatform\Doctrine\Common\State\PersistProcessor;
 
 #[ORM\Entity(repositoryClass: AffectedLocationRepository::class)]
+#[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_CODE', fields: ['code'])]
 #[ApiResource(
     normalizationContext: ['groups' => 'affected_location:get'],
     operations: [
@@ -40,6 +43,13 @@ use Symfony\Component\Validator\Constraints as Assert;
         ),
     ]
 )]
+#[ApiFilter(SearchFilter::class, properties: [
+    'id' => 'exact',
+    'label' => 'ipartial',
+    'description' => 'ipartial',
+    'code' => 'exact',
+    'actived' => 'exact'
+])]
 class AffectedLocation
 {
     const ID_PREFIX = "AL";
