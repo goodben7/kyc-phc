@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\Get;
 use App\Doctrine\IdGenerator;
+use ApiPlatform\Metadata\Post;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
@@ -13,6 +14,9 @@ use ApiPlatform\Doctrine\Orm\State\ItemProvider;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Doctrine\Orm\State\CollectionProvider;
+use ApiPlatform\Doctrine\Common\State\PersistProcessor;
+use ApiPlatform\Metadata\Patch;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_CODE', fields: ['code'])]
@@ -26,7 +30,17 @@ use ApiPlatform\Doctrine\Orm\State\CollectionProvider;
         new GetCollection(
             security: 'is_granted("ROLE_CATEGORY_LIST")',
             provider: CollectionProvider::class
-        )
+        ),
+        new Post(
+            security: 'is_granted("ROLE_CATEGORY_CREATE")',
+            denormalizationContext: ['groups' => 'category:post'],
+            processor: PersistProcessor::class,
+        ),
+        new Patch(
+            security: 'is_granted("ROLE_CATEGORY_UPDATE")',
+            denormalizationContext: ['groups' => 'category:patch'],
+            processor: PersistProcessor::class,
+        ),
     ]
 )]
 #[ApiFilter(SearchFilter::class, properties: [
@@ -48,19 +62,21 @@ class Category
     private ?string $id = null;
 
     #[ORM\Column(length: 120)]
-    #[Groups(groups: ['category:get'])]
+    #[Assert\NotNull]
+    #[Assert\NotBlank]
+    #[Groups(groups: ['category:get', 'category:post', 'category:patch'])]
     private ?string $label = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(groups: ['category:get'])]
+    #[Groups(groups: ['category:get', 'category:post', 'category:patch'])]
     private ?string $description = null;
 
     #[ORM\Column(length: 30, nullable: true)]
-    #[Groups(groups: ['category:get'])]
+    #[Groups(groups: ['category:get', 'category:post', 'category:patch'])]
     private ?string $code = null;
 
     #[ORM\Column]
-    #[Groups(groups: ['category:get'])]
+    #[Groups(groups: ['category:get', 'category:post', 'category:patch'])]
     private ?bool $actived = false;
 
     public function getId(): ?string
