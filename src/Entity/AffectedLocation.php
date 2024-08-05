@@ -5,6 +5,7 @@ namespace App\Entity;
 use ApiPlatform\Metadata\Get;
 use App\Doctrine\IdGenerator;
 use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Patch;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
@@ -13,6 +14,7 @@ use ApiPlatform\Doctrine\Orm\State\ItemProvider;
 use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Doctrine\Orm\State\CollectionProvider;
 use ApiPlatform\Doctrine\Common\State\PersistProcessor;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: AffectedLocationRepository::class)]
 #[ApiResource(
@@ -31,6 +33,11 @@ use ApiPlatform\Doctrine\Common\State\PersistProcessor;
             denormalizationContext: ['groups' => 'affected_location:post'],
             processor: PersistProcessor::class,
         ),
+        new Patch(
+            security: 'is_granted("ROLE_AFFECTED_LOCATION_UPDATE")',
+            denormalizationContext: ['groups' => 'affected_location:patch'],
+            processor: PersistProcessor::class,
+        ),
     ]
 )]
 class AffectedLocation
@@ -45,19 +52,21 @@ class AffectedLocation
     private ?string $id = null;
 
     #[ORM\Column(length: 120)]
-    #[Groups(groups: ['affected_location:get', 'affected_location:post'])]
+    #[Assert\NotNull]
+    #[Assert\NotBlank]
+    #[Groups(groups: ['affected_location:get', 'affected_location:post', 'affected_location:patch'])]
     private ?string $label = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(groups: ['affected_location:get', 'affected_location:post'])]
+    #[Groups(groups: ['affected_location:get', 'affected_location:post', 'affected_location:patch'])]
     private ?string $description = null;
 
     #[ORM\Column(length: 30, nullable: true)]
-    #[Groups(groups: ['affected_location:get', 'affected_location:post'])]
+    #[Groups(groups: ['affected_location:get', 'affected_location:post', 'affected_location:patch'])]
     private ?string $code = null;
 
     #[ORM\Column]
-    #[Groups(groups: ['affected_location:get', 'affected_location:post'])]
+    #[Groups(groups: ['affected_location:get', 'affected_location:post', 'affected_location:patch'])]
     private ?bool $actived = true;
 
     public function getId(): ?string
