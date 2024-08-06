@@ -78,9 +78,27 @@ use ApiPlatform\Doctrine\Common\State\PersistProcessor;
     'updatedBy' => 'exact',
     'oldIdentificationNumber' => 'exact',
     'identificationNumber' => 'exact',
+    'contractualNetPayUsd' => 'exact',
+    'contractualNetPayCdf' => 'exact',
+    'contratType' => 'exact',
+    'annotation' => 'ipartial',
+    'placeBirth' => 'ipartial',
+    'socialSecurityId' => 'exact',
+    'taxIdNumber' => 'exact',
+    'bankAccountId' => 'exact',
+    'dependent' => 'exact',
+    'emergencyContactPerson' => 'ipartial',
+    'factSheet' => 'exact',
+    'onemValidatedContract' => 'exact',
+    'birthCertificate' => 'exact',
+    'marriageLicense' => 'exact',
+    'site' => 'exact',
+    'category' => 'exact',
+    'functionTitle' => 'exact',
+    'affectedLocation' => 'exact',
 ])]
-#[ApiFilter(OrderFilter::class, properties: ['createdAt', 'updatedAt', 'validatedAt'])]
-#[ApiFilter(DateFilter::class, properties: ['createdAt', 'updatedAt', 'validatedAt'])]
+#[ApiFilter(OrderFilter::class, properties: ['createdAt', 'updatedAt', 'validatedAt', 'dateHire', 'endContractDate'])]
+#[ApiFilter(DateFilter::class, properties: ['createdAt', 'updatedAt', 'validatedAt', 'dateHire', 'endContractDate'])]
 class Agent
 {
     const ID_PREFIX = "AG";
@@ -100,6 +118,9 @@ class Agent
     const MARITAL_STATUS_DIVORCED = "D";
     const MARITAL_STATUS_SINGLE = "S";
     const MARITAL_STATUS_WIDOWER = "W";
+
+    const CONTRAT_TYPE_CDI = 'CDI';
+    const CONTRAT_TYPE_CDD = 'CDD';
 
     #[ORM\Id]
     #[ORM\GeneratedValue( strategy: 'CUSTOM')]
@@ -209,6 +230,86 @@ class Agent
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(groups: ['agent:get', 'agent:patch'])]
     private ?string $contact2 = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(groups: ['agent:get', 'agent:patch'])]
+    private ?string $contractualNetPayUsd = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(groups: ['agent:get', 'agent:patch'])]
+    private ?string $contractualNetPayCdf = null;
+
+    #[ORM\Column(nullable: true)]
+    #[Groups(groups: ['agent:get', 'agent:patch'])]
+    private ?\DateTimeImmutable $dateHire = null;
+
+    #[ORM\Column(length: 10, nullable: true)]
+    #[Groups(groups: ['agent:get', 'agent:patch'])]
+    private ?string $contratType = null;
+
+    #[ORM\Column(nullable: true)]
+    #[Groups(groups: ['agent:get', 'agent:patch'])]
+    private ?\DateTimeImmutable $endContractDate = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(groups: ['agent:get', 'agent:patch'])]
+    private ?string $annotation = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(groups: ['agent:get', 'agent:patch'])]
+    private ?string $placeBirth = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(groups: ['agent:get', 'agent:patch'])]
+    private ?string $socialSecurityId = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(groups: ['agent:get', 'agent:patch'])]
+    private ?string $taxIdNumber = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(groups: ['agent:get', 'agent:patch'])]
+    private ?string $bankAccountId = null;
+
+    #[ORM\Column(nullable: true)]
+    #[Groups(groups: ['agent:get', 'agent:patch'])]
+    private ?int $dependent = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(groups: ['agent:get', 'agent:patch'])]
+    private ?string $emergencyContactPerson = null;
+
+    #[ORM\Column(nullable: true)]
+    #[Groups(groups: ['agent:get', 'agent:patch'])]
+    private ?bool $factSheet = null;
+
+    #[ORM\Column(nullable: true)]
+    #[Groups(groups: ['agent:get', 'agent:patch'])]
+    private ?bool $onemValidatedContract = null;
+
+    #[ORM\Column(nullable: true)]
+    #[Groups(groups: ['agent:get', 'agent:patch'])]
+    private ?bool $birthCertificate = null;
+
+    #[ORM\Column(nullable: true)]
+    #[Groups(groups: ['agent:get', 'agent:patch'])]
+    private ?bool $marriageLicense = null;
+
+    #[ORM\ManyToOne(inversedBy: 'agents', cascade: ['persist'])]
+    #[Groups(groups: ['agent:get', 'agent:patch'])]
+    private ?Site $site = null;
+
+    #[ORM\ManyToOne(inversedBy: 'agents', cascade: ['persist'])]
+    #[Groups(groups: ['agent:get', 'agent:patch'])]
+    private ?Category $category = null;
+
+    #[ORM\ManyToOne(inversedBy: 'agents', cascade: ['persist'])]
+    #[Groups(groups: ['agent:get', 'agent:patch'])]
+    private ?FunctionTitle $functionTitle = null;
+
+    #[ORM\ManyToOne(inversedBy: 'agents', cascade: ['persist'])]
+    #[Groups(groups: ['agent:get', 'agent:patch'])]
+    private ?AffectedLocation $affectedLocation = null;
 
     public function __construct()
     {
@@ -581,6 +682,246 @@ class Agent
     public function setContact2(?string $contact2): static
     {
         $this->contact2 = $contact2;
+
+        return $this;
+    }
+
+    public function getContractualNetPayUsd(): ?string
+    {
+        return $this->contractualNetPayUsd;
+    }
+
+    public function setContractualNetPayUsd(?string $contractualNetPayUsd): static
+    {
+        $this->contractualNetPayUsd = $contractualNetPayUsd;
+
+        return $this;
+    }
+
+    public function getContractualNetPayCdf(): ?string
+    {
+        return $this->contractualNetPayCdf;
+    }
+
+    public function setContractualNetPayCdf(?string $contractualNetPayCdf): static
+    {
+        $this->contractualNetPayCdf = $contractualNetPayCdf;
+
+        return $this;
+    }
+
+    public function getDateHire(): ?\DateTimeImmutable
+    {
+        return $this->dateHire;
+    }
+
+    public function setDateHire(?\DateTimeImmutable $dateHire): static
+    {
+        $this->dateHire = $dateHire;
+
+        return $this;
+    }
+
+    public function getContratType(): ?string
+    {
+        return $this->contratType;
+    }
+
+    public function setContratType(?string $contratType): static
+    {
+        $this->contratType = $contratType;
+
+        return $this;
+    }
+
+    public function getEndContractDate(): ?\DateTimeImmutable
+    {
+        return $this->endContractDate;
+    }
+
+    public function setEndContractDate(?\DateTimeImmutable $endContractDate): static
+    {
+        $this->endContractDate = $endContractDate;
+
+        return $this;
+    }
+
+    public function getAnnotation(): ?string
+    {
+        return $this->annotation;
+    }
+
+    public function setAnnotation(?string $annotation): static
+    {
+        $this->annotation = $annotation;
+
+        return $this;
+    }
+
+    public function getPlaceBirth(): ?string
+    {
+        return $this->placeBirth;
+    }
+
+    public function setPlaceBirth(?string $placeBirth): static
+    {
+        $this->placeBirth = $placeBirth;
+
+        return $this;
+    }
+
+    public function getSocialSecurityId(): ?string
+    {
+        return $this->socialSecurityId;
+    }
+
+    public function setSocialSecurityId(?string $socialSecurityId): static
+    {
+        $this->socialSecurityId = $socialSecurityId;
+
+        return $this;
+    }
+
+    public function getTaxIdNumber(): ?string
+    {
+        return $this->taxIdNumber;
+    }
+
+    public function setTaxIdNumber(?string $taxIdNumber): static
+    {
+        $this->taxIdNumber = $taxIdNumber;
+
+        return $this;
+    }
+
+    public function getBankAccountId(): ?string
+    {
+        return $this->bankAccountId;
+    }
+
+    public function setBankAccountId(?string $bankAccountId): static
+    {
+        $this->bankAccountId = $bankAccountId;
+
+        return $this;
+    }
+
+    public function getDependent(): ?int
+    {
+        return $this->dependent;
+    }
+
+    public function setDependent(?int $dependent): static
+    {
+        $this->dependent = $dependent;
+
+        return $this;
+    }
+
+    public function getEmergencyContactPerson(): ?string
+    {
+        return $this->emergencyContactPerson;
+    }
+
+    public function setEmergencyContactPerson(?string $emergencyContactPerson): static
+    {
+        $this->emergencyContactPerson = $emergencyContactPerson;
+
+        return $this;
+    }
+
+    public function isFactSheet(): ?bool
+    {
+        return $this->factSheet;
+    }
+
+    public function setFactSheet(?bool $factSheet): static
+    {
+        $this->factSheet = $factSheet;
+
+        return $this;
+    }
+
+    public function isOnemValidatedContract(): ?bool
+    {
+        return $this->onemValidatedContract;
+    }
+
+    public function setOnemValidatedContract(?bool $onemValidatedContract): static
+    {
+        $this->onemValidatedContract = $onemValidatedContract;
+
+        return $this;
+    }
+
+    public function isBirthCertificate(): ?bool
+    {
+        return $this->birthCertificate;
+    }
+
+    public function setBirthCertificate(?bool $birthCertificate): static
+    {
+        $this->birthCertificate = $birthCertificate;
+
+        return $this;
+    }
+
+    public function isMarriageLicense(): ?bool
+    {
+        return $this->marriageLicense;
+    }
+
+    public function setMarriageLicense(?bool $marriageLicense): static
+    {
+        $this->marriageLicense = $marriageLicense;
+
+        return $this;
+    }
+
+    public function getSite(): ?Site
+    {
+        return $this->site;
+    }
+
+    public function setSite(?Site $site): static
+    {
+        $this->site = $site;
+
+        return $this;
+    }
+
+    public function getCategory(): ?Category
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?Category $category): static
+    {
+        $this->category = $category;
+
+        return $this;
+    }
+
+    public function getFunctionTitle(): ?FunctionTitle
+    {
+        return $this->functionTitle;
+    }
+
+    public function setFunctionTitle(?FunctionTitle $functionTitle): static
+    {
+        $this->functionTitle = $functionTitle;
+
+        return $this;
+    }
+
+    public function getAffectedLocation(): ?AffectedLocation
+    {
+        return $this->affectedLocation;
+    }
+
+    public function setAffectedLocation(?AffectedLocation $affectedLocation): static
+    {
+        $this->affectedLocation = $affectedLocation;
 
         return $this;
     }

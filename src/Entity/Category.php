@@ -5,6 +5,8 @@ namespace App\Entity;
 use ApiPlatform\Metadata\Get;
 use App\Doctrine\IdGenerator;
 use ApiPlatform\Metadata\Post;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
@@ -79,6 +81,17 @@ class Category
     #[Groups(groups: ['category:get', 'category:post', 'category:patch'])]
     private ?bool $actived = false;
 
+    /**
+     * @var Collection<int, Agent>
+     */
+    #[ORM\OneToMany(targetEntity: Agent::class, mappedBy: 'category')]
+    private Collection $agents;
+
+    public function __construct()
+    {
+        $this->agents = new ArrayCollection();
+    }
+
     public function getId(): ?string
     {
         return $this->id;
@@ -128,6 +141,36 @@ class Category
     public function setActived(bool $actived): static
     {
         $this->actived = $actived;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Agent>
+     */
+    public function getAgents(): Collection
+    {
+        return $this->agents;
+    }
+
+    public function addAgent(Agent $agent): static
+    {
+        if (!$this->agents->contains($agent)) {
+            $this->agents->add($agent);
+            $agent->setCategory($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAgent(Agent $agent): static
+    {
+        if ($this->agents->removeElement($agent)) {
+            // set the owning side to null (unless already changed)
+            if ($agent->getCategory() === $this) {
+                $agent->setCategory(null);
+            }
+        }
 
         return $this;
     }

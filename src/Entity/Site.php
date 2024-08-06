@@ -6,6 +6,8 @@ use ApiPlatform\Metadata\Get;
 use App\Doctrine\IdGenerator;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Patch;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\SiteRepository;
 use ApiPlatform\Metadata\ApiFilter;
@@ -79,6 +81,17 @@ class Site
     #[Groups(groups: ['site:get', 'site:post', 'site:patch'])]
     private ?bool $actived = true;
 
+    /**
+     * @var Collection<int, Agent>
+     */
+    #[ORM\OneToMany(targetEntity: Agent::class, mappedBy: 'site')]
+    private Collection $agents;
+
+    public function __construct()
+    {
+        $this->agents = new ArrayCollection();
+    }
+
     public function getId(): ?string
     {
         return $this->id;
@@ -128,6 +141,36 @@ class Site
     public function setActived(bool $actived): static
     {
         $this->actived = $actived;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Agent>
+     */
+    public function getAgents(): Collection
+    {
+        return $this->agents;
+    }
+
+    public function addAgent(Agent $agent): static
+    {
+        if (!$this->agents->contains($agent)) {
+            $this->agents->add($agent);
+            $agent->setSite($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAgent(Agent $agent): static
+    {
+        if ($this->agents->removeElement($agent)) {
+            // set the owning side to null (unless already changed)
+            if ($agent->getSite() === $this) {
+                $agent->setSite(null);
+            }
+        }
 
         return $this;
     }
