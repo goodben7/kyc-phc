@@ -52,6 +52,26 @@ class AgentManager
         $a->setContact($model->contact);
         $a->setContact2($model->contact2);
         $a->setOldIdentificationNumber($model->oldIdentificationNumber);
+        $a->setContractualNetPayUsd($model->contractualNetPayUsd);
+        $a->setContractualNetPayCdf($model->contractualNetPayCdf);
+        $a->setDateHire($model->dateHire);
+        $a->setContratType($model->contratType);
+        $a->setEndContractDate($model->endContractDate);
+        $a->setAnnotation($model->annotation);
+        $a->setPlaceBirth($model->placeBirth);
+        $a->setSocialSecurityId($model->socialSecurityId);
+        $a->setTaxIdNumber($model->taxIdNumber);
+        $a->setBankAccountId($model->bankAccountId);
+        $a->setDependent($model->dependent);
+        $a->setEmergencyContactPerson($model->emergencyContactPerson);
+        $a->setFactSheet($model->factSheet);
+        $a->setOnemValidatedContract($model->onemValidatedContract);
+        $a->setBirthCertificate($model->birthCertificate);
+        $a->setMarriageLicense($model->marriageLicense);
+        $a->setSite($model->site);
+        $a->setCategory($model->category);
+        $a->setFunctionTitle($model->functionTitle);
+        $a->setAffectedLocation($model->affectedLocation);
 
         $this->em->persist($a);
         $this->em->flush();

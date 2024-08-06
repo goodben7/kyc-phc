@@ -30,10 +30,27 @@ security:
             - ROLE_TASK_CREATE
             - ROLE_TASK_DETAILS
             - ROLE_TASK_LIST
+            - ROLE_SITE_DETAILS
+            - ROLE_SITE_LIST
+            - ROLE_AFFECTED_LOCATION_DETAILS
+            - ROLE_AFFECTED_LOCATION_LIST
+            - ROLE_SITE_CREATE
+            - ROLE_SITE_UPDATE
+            - ROLE_AFFECTED_LOCATION_CREATE
+            - ROLE_AFFECTED_LOCATION_UPDATE
+            - ROLE_CATEGORY_DETAILS
+            - ROLE_CATEGORY_LIST
+            - ROLE_CATEGORY_CREATE
+            - ROLE_CATEGORY_UPDATE
+            - ROLE_FUNCTION_DETAILS
+            - ROLE_FUNCTION_LIST
+            - ROLE_FUNCTION_CREATE
+            - ROLE_FUNCTION_UPDATE
         ROLE_SUPER_ADMIN:
             - ROLE_USER_DETAILS
             - ROLE_USER_LIST
             - ROLE_USER_CREATE
+            - ROLE_USER_EDIT
             - ROLE_USER_CHANGE_PWD
             - ROLE_AGENT_DETAILS
             - ROLE_AGENT_LIST
@@ -41,6 +58,22 @@ security:
             - ROLE_KYCDOC_LIST
             - ROLE_TASK_DETAILS
             - ROLE_TASK_LIST
+            - ROLE_SITE_DETAILS
+            - ROLE_SITE_LIST
+            - ROLE_AFFECTED_LOCATION_DETAILS
+            - ROLE_AFFECTED_LOCATION_LIST
+            - ROLE_SITE_CREATE
+            - ROLE_SITE_UPDATE
+            - ROLE_AFFECTED_LOCATION_CREATE
+            - ROLE_AFFECTED_LOCATION_UPDATE
+            - ROLE_CATEGORY_DETAILS
+            - ROLE_CATEGORY_LIST
+            - ROLE_CATEGORY_CREATE
+            - ROLE_CATEGORY_UPDATE
+            - ROLE_FUNCTION_DETAILS
+            - ROLE_FUNCTION_LIST
+            - ROLE_FUNCTION_CREATE
+            - ROLE_FUNCTION_UPDATE
         ROLE_RECRUITER:
             - ROLE_USER_DETAILS
             - ROLE_USER_CHANGE_PWD
@@ -55,6 +88,14 @@ security:
             - ROLE_TASK_CREATE
             - ROLE_TASK_DETAILS
             - ROLE_TASK_LIST
+            - ROLE_SITE_DETAILS
+            - ROLE_SITE_LIST
+            - ROLE_AFFECTED_LOCATION_DETAILS
+            - ROLE_AFFECTED_LOCATION_LIST
+            - ROLE_CATEGORY_DETAILS
+            - ROLE_CATEGORY_LIST
+            - ROLE_FUNCTION_DETAILS
+            - ROLE_FUNCTION_LIST
 
 
     firewalls:

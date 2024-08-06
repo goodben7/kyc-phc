@@ -2,15 +2,20 @@
 
 namespace App\Tasks;
 
+use App\Entity\Site;
 use App\Entity\Task;
+use App\Entity\Category;
 use App\Model\NewAgentModel;
 use App\Model\TaskInterface;
 use Psr\Log\LoggerInterface;
+use App\Entity\FunctionTitle;
 use App\Manager\AgentManager;
+use App\Entity\AffectedLocation;
 use App\Model\TaskRunnerInterface;
 use App\Repository\TaskRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
+use App\Exception\UnavailableDataException;
 use App\Exception\InvalidActionInputException;
 
 class AgentSynchronisationTaskRunner  implements TaskRunnerInterface
@@ -68,9 +73,37 @@ class AgentSynchronisationTaskRunner  implements TaskRunnerInterface
     private function create(TaskInterface $task): void
     {
         try {
-    
-            if ($task->getDataValue('createdAt') !== null) {
-                $createdAt = \DateTimeImmutable::createFromFormat('Y-m-d', $task->getDataValue('createdAt'));
+
+            /** @var Site|null $site */
+            $site = null;
+            if (!is_null($task->getDataValue('site'))) {
+                $site = $this->em->getRepository(Site::class)->find($task->getDataValue('site'));
+                if (is_null($site))
+                    throw new UnavailableDataException(sprintf("The site with ID %s doesn't exist", $task->getDataValue('site')));
+            }
+
+            /** @var Category|null $category */
+            $category = null;
+            if (!is_null($task->getDataValue('category'))) {
+                $category = $this->em->getRepository(Category::class)->find($task->getDataValue('category'));
+                if (is_null($category))
+                    throw new UnavailableDataException(sprintf("The category with ID %s doesn't exist", $task->getDataValue('category')));
+            }
+
+            /** @var FunctionTitle|null $functionTitle */
+            $functionTitle = null;
+            if (!is_null($task->getDataValue('functionTitle'))) {
+                $functionTitle = $this->em->getRepository(FunctionTitle::class)->find($task->getDataValue('functionTitle'));
+                if (is_null($functionTitle))
+                    throw new UnavailableDataException(sprintf("The category with ID %s doesn't exist", $task->getDataValue('functionTitle')));
+            }
+
+            /** @var AffectedLocation|null $affectedLocation */
+            $affectedLocation = null;
+            if (!is_null($task->getDataValue('affectedLocation'))) {
+                $affectedLocation = $this->em->getRepository(AffectedLocation::class)->find($task->getDataValue('affectedLocation'));
+                if (is_null($affectedLocation))
+                    throw new UnavailableDataException(sprintf("The category with ID %s doesn't exist", $task->getDataValue('affectedLocation')));
             }
 
             $model = new NewAgentModel();
@@ -81,16 +114,35 @@ class AgentSynchronisationTaskRunner  implements TaskRunnerInterface
             $model->birthday = $task->getDataValue('birthday');
             $model->maritalStatus = $task->getDataValue('maritalStatus');
             $model->gender = $task->getDataValue('gender');
-            $model->createdAt = $createdAt;
-            $model->createdBy = $task->getDataValue('createdBy');
+            $model->createdAt = $task->getCreatedAt();
+            $model->createdBy = $task->getCreatedBy();
             $model->address = $task->getDataValue('address');
             $model->address2 = $task->getDataValue('address2');
             $model->contact = $task->getDataValue('contact');
             $model->contact2 = $task->getDataValue('contact2');
             $model->externalReferenceId = $task->getDataValue('externalReferenceId');
             $model->oldIdentificationNumber = $task->getDataValue('oldIdentificationNumber');
+            $model->contractualNetPayUsd = $task->getDataValue('contractualNetPayUsd');
+            $model->contractualNetPayCdf = $task->getDataValue('contractualNetPayCdf');
+            $model->dateHire = $task->getDataValue('dateHire') ? \DateTimeImmutable::createFromFormat('Y-m-d', $task->getDataValue('dateHire')) : null;
+            $model->contratType = $task->getDataValue('contratType');
+            $model->endContractDate = $task->getDataValue('endContractDate') ? \DateTimeImmutable::createFromFormat('Y-m-d', $task->getDataValue('endContractDate')) : null;
+            $model->annotation = $task->getDataValue('annotation');
+            $model->placeBirth = $task->getDataValue('placeBirth');
+            $model->socialSecurityId = $task->getDataValue('socialSecurityId');
+            $model->taxIdNumber = $task->getDataValue('taxIdNumber');
+            $model->bankAccountId = $task->getDataValue('bankAccountId');
+            $model->dependent = $task->getDataValue('dependent');
+            $model->emergencyContactPerson = $task->getDataValue('emergencyContactPerson');
+            $model->factSheet = $task->getDataValue('factSheet');
+            $model->onemValidatedContract = $task->getDataValue('onemValidatedContract');
+            $model->birthCertificate = $task->getDataValue('birthCertificate');
+            $model->marriageLicense = $task->getDataValue('marriageLicense');
+            $model->site = $site;
+            $model->category = $category;
+            $model->functionTitle = $functionTitle;
+            $model->affectedLocation = $affectedLocation;
 
-            $this->managerRegistry->resetManager();
             $this->manager->createAgent($model);
 
             $this->repository->updateTaskStatus($task->getId(), Task::STATUS_TERMINATED, null);
@@ -107,13 +159,41 @@ class AgentSynchronisationTaskRunner  implements TaskRunnerInterface
         try {
 
             $agent = $this->manager->findByExternalReferenceId($task->getDataValue('externalReferenceId'));
-    
-            if ($task->getDataValue('updatedAt') !== null) {
-                $updatedAt = \DateTimeImmutable::createFromFormat('Y-m-d', $task->getDataValue('updatedAt'));
-            }
 
             if ($task->getDataValue('birthday') !== null) {
                 $birthday = \DateTimeImmutable::createFromFormat('Y-m-d', $task->getDataValue('birthday'));
+            }
+
+            /** @var Site|null $site */
+            $site = null;
+            if (!is_null($task->getDataValue('site'))) {
+                $site = $this->em->getRepository(Site::class)->find($task->getDataValue('site'));
+                if (is_null($site))
+                    throw new UnavailableDataException(sprintf("The site with ID %s doesn't exist", $task->getDataValue('site')));
+            }
+
+            /** @var Category|null $category */
+            $category = null;
+            if (!is_null($task->getDataValue('category'))) {
+                $category = $this->em->getRepository(Category::class)->find($task->getDataValue('category'));
+                if (is_null($category))
+                    throw new UnavailableDataException(sprintf("The category with ID %s doesn't exist", $task->getDataValue('category')));
+            }
+
+            /** @var FunctionTitle|null $functionTitle */
+            $functionTitle = null;
+            if (!is_null($task->getDataValue('functionTitle'))) {
+                $functionTitle = $this->em->getRepository(FunctionTitle::class)->find($task->getDataValue('functionTitle'));
+                if (is_null($functionTitle))
+                    throw new UnavailableDataException(sprintf("The category with ID %s doesn't exist", $task->getDataValue('functionTitle')));
+            }
+
+            /** @var AffectedLocation|null $affectedLocation */
+            $affectedLocation = null;
+            if (!is_null($task->getDataValue('affectedLocation'))) {
+                $affectedLocation = $this->em->getRepository(AffectedLocation::class)->find($task->getDataValue('affectedLocation'));
+                if (is_null($affectedLocation))
+                    throw new UnavailableDataException(sprintf("The category with ID %s doesn't exist", $task->getDataValue('affectedLocation')));
             }
 
             $agent->setFirstName($task->getDataValue('firstName'));
@@ -123,13 +203,33 @@ class AgentSynchronisationTaskRunner  implements TaskRunnerInterface
             $agent->setBirthday($birthday);
             $agent->setMaritalStatus($task->getDataValue('maritalStatus'));
             $agent->setGender($task->getDataValue('gender'));
-            $agent->setUpdatedBy($task->getDataValue('updatedBy'));
-            $agent->setUpdatedAt($updatedAt);
+            $agent->setUpdatedBy($task->getCreatedBy());
+            $agent->setUpdatedAt($task->getCreatedAt());
             $agent->setAddress($task->getDataValue('address'));
             $agent->setAddress2($task->getDataValue('address2'));
             $agent->setContact($task->getDataValue('contatc'));
             $agent->setContact2($task->getDataValue('contatc2'));
             $agent->setOldIdentificationNumber($task->getDataValue('oldIdentificationNumber'));
+            $agent->setContractualNetPayUsd($task->getDataValue('contractualNetPayUsd'));
+            $agent->setContractualNetPayCdf($task->getDataValue('contractualNetPayCdf'));
+            $agent->setDateHire($task->getDataValue('dateHire') ? \DateTimeImmutable::createFromFormat('Y-m-d', $task->getDataValue('dateHire')) : null);
+            $agent->setContratType($task->getDataValue('contratType'));
+            $agent->setEndContractDate($task->getDataValue('endContractDate') ? \DateTimeImmutable::createFromFormat('Y-m-d', $task->getDataValue('endContractDate')) : null);
+            $agent->setAnnotation($task->getDataValue('annotation'));
+            $agent->setPlaceBirth($task->getDataValue('placeBirth'));
+            $agent->setSocialSecurityId($task->getDataValue('socialSecurityId'));
+            $agent->setTaxIdNumber($task->getDataValue('taxIdNumber'));
+            $agent->setBankAccountId($task->getDataValue('bankAccountId'));
+            $agent->setDependent($task->getDataValue('dependent'));
+            $agent->setEmergencyContactPerson($task->getDataValue('emergencyContactPerson'));
+            $agent->setFactSheet($task->getDataValue('factSheet'));
+            $agent->setOnemValidatedContract($task->getDataValue('onemValidatedContract'));
+            $agent->setBirthCertificate($task->getDataValue('birthCertificate'));
+            $agent->setMarriageLicense($task->getDataValue('marriageLicense'));
+            $agent->setSite($site);
+            $agent->setCategory($category);
+            $agent->setFunctionTitle($functionTitle);
+            $agent->setAffectedLocation($affectedLocation);
     
             $this->manager->update($agent);
     

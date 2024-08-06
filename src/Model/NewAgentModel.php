@@ -1,7 +1,11 @@
 <?php
 namespace App\Model;
 
+use App\Entity\Site;
 use App\Entity\Agent;
+use App\Entity\Category;
+use App\Entity\FunctionTitle;
+use App\Entity\AffectedLocation;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class NewAgentModel {
@@ -64,4 +68,45 @@ class NewAgentModel {
     public ?string $contact = null;
 
     public ?string $contact2 = null;
+
+    public ?string $contractualNetPayUsd = null;
+
+    public ?string $contractualNetPayCdf = null;
+
+    public ?\DateTimeImmutable $dateHire = null;
+
+    #[Assert\Choice(choices: [Agent::CONTRAT_TYPE_CDD, Agent::CONTRAT_TYPE_CDI])]
+    public ?string $contratType = null;
+
+    public ?\DateTimeImmutable $endContractDate = null;
+
+    public ?string $annotation = null;
+
+    public ?string $placeBirth = null;
+
+    public ?string $socialSecurityId = null;
+
+    public ?string $taxIdNumber = null;
+
+    public ?string $bankAccountId = null;
+
+    public ?int $dependent = null;
+
+    public ?string $emergencyContactPerson = null;
+
+    public ?bool $factSheet = null;
+
+    public ?bool $onemValidatedContract = null;
+
+    public ?bool $birthCertificate = null;
+
+    public ?bool $marriageLicense = null;
+
+    public ?Site $site = null;
+
+    public ?Category $category = null;
+
+    public ?FunctionTitle $functionTitle = null;
+
+    public ?AffectedLocation $affectedLocation = null;
 }
