@@ -2,8 +2,8 @@
 
 namespace App\State;
 
-use App\Ressource\ExecuteTask;
 use Symfony\Component\Uid\Uuid;
+use App\ApiResource\ExecuteTask;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use App\Message\Command\CommandBusInterface;

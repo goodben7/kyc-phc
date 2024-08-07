@@ -174,4 +174,9 @@ class FunctionTitle
 
         return $this;
     }
+
+    public function __tostring(): string
+    {
+        return $this->label;
+    }
 }

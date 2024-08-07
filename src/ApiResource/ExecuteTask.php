@@ -1,5 +1,5 @@
 <?php
-namespace App\Ressource;
+namespace App\ApiResource;
 
 use ApiPlatform\Metadata\Post;
 use Symfony\Component\Uid\Uuid;
