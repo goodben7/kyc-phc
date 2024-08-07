@@ -46,6 +46,7 @@ security:
             - ROLE_FUNCTION_LIST
             - ROLE_FUNCTION_CREATE
             - ROLE_FUNCTION_UPDATE
+            - ROLE_TASK_EXECUTE
         ROLE_SUPER_ADMIN:
             - ROLE_USER_DETAILS
             - ROLE_USER_LIST
@@ -74,6 +75,7 @@ security:
             - ROLE_FUNCTION_LIST
             - ROLE_FUNCTION_CREATE
             - ROLE_FUNCTION_UPDATE
+            - ROLE_TASK_EXECUTE
         ROLE_RECRUITER:
             - ROLE_USER_DETAILS
             - ROLE_USER_CHANGE_PWD
