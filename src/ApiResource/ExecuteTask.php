@@ -3,7 +3,7 @@ namespace App\Ressource;
 
 use ApiPlatform\Metadata\Post;
 use Symfony\Component\Uid\Uuid;
-use App\State\ExcuteTasksProcessor;
+use App\State\ExecuteTasksProcessor;
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -15,7 +15,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
             normalizationContext: ['groups' => 'execute_task:get'],
             denormalizationContext: ['groups' => 'execute_task:execute'],
             security: 'is_granted("ROLE_TASK_EXECUTE")',
-            processor: ExcuteTasksProcessor::class,
+            processor: ExecuteTasksProcessor::class,
             status: 200
         )
     ]

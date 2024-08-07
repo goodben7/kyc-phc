@@ -9,10 +9,10 @@ use ApiPlatform\State\ProcessorInterface;
 use App\Message\Command\CommandBusInterface;
 use App\Message\Command\CheckPendingTasksCommand;
 
-class ExcuteTasksProcessor implements ProcessorInterface
+class ExecuteTasksProcessor implements ProcessorInterface
 {
 
-    public function __construct(private CommandBusInterface $bus,)
+    public function __construct(private CommandBusInterface $bus)
     {
     }
     
