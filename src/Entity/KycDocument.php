@@ -71,6 +71,10 @@ class KycDocument
     const TYPE_DRIVE_LICENCE = "DRVLC";
     const TYPE_SIGNATURE = "SIGNT";
     const TYPE_OTHER = "OTHER";
+    const TYPE_FACT_SHEET = "FCSHT";
+    const TYPE_ONEM_VALIDATED_CONTRACT = "ONEM";
+    const TYPE_BIRTH_CERTIFICATE = "BICER";
+    const TYPE_MARRIAGE_LICENSE = "MALIC";
     
     const STATUS_VERIFIED = "V";
     const STATUS_PENDING = "P";
@@ -236,6 +240,10 @@ class KycDocument
             "Passport" => self::TYPE_PASSPORT,
             "Photo Passport" => self::TYPE_PASSPORT_PHOTO,
             "Signature" => self::TYPE_SIGNATURE,
+            "Fiche signalétique" => self::TYPE_FACT_SHEET,
+            "Contrat validé par ONEM" => self::TYPE_ONEM_VALIDATED_CONTRACT,
+            "Acte de naissance" => self::TYPE_BIRTH_CERTIFICATE,
+            "Acte de mariage" => self::TYPE_MARRIAGE_LICENSE,
             "Autres" => self::TYPE_OTHER,
         ];
     }
