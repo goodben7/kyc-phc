@@ -59,14 +59,14 @@ class FunctionTitle
     #[ORM\Id]
     #[ORM\GeneratedValue( strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(IdGenerator::class)]
-    #[Groups(groups: ['function:get'])]
+    #[Groups(groups: ['function:get', 'agent:get'])]
     #[ORM\Column(length: 16)]
     private ?string $id = null;
 
     #[ORM\Column(length: 120)]
     #[Assert\NotNull]
     #[Assert\NotBlank]
-    #[Groups(groups: ['function:get', 'function:post', 'function:patch'])]
+    #[Groups(groups: ['function:get', 'function:post', 'function:patch', 'agent:get'])]
     private ?string $label = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -173,5 +173,10 @@ class FunctionTitle
         }
 
         return $this;
+    }
+
+    public function __tostring(): string
+    {
+        return $this->label;
     }
 }

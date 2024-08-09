@@ -60,13 +60,13 @@ class AffectedLocation
     #[ORM\GeneratedValue( strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(IdGenerator::class)]
     #[ORM\Column(length: 16)]
-    #[Groups(groups: ['affected_location:get'])]
+    #[Groups(groups: ['affected_location:get','agent:get'])]
     private ?string $id = null;
 
     #[ORM\Column(length: 120)]
     #[Assert\NotNull]
     #[Assert\NotBlank]
-    #[Groups(groups: ['affected_location:get', 'affected_location:post', 'affected_location:patch'])]
+    #[Groups(groups: ['affected_location:get', 'affected_location:post', 'affected_location:patch', 'agent:get'])]
     private ?string $label = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -173,5 +173,10 @@ class AffectedLocation
         }
 
         return $this;
+    }
+
+    public function __tostring(): string
+    {
+        return $this->label;
     }
 }

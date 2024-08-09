@@ -126,7 +126,7 @@ class Agent
     #[ORM\GeneratedValue( strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(IdGenerator::class)]
     #[ORM\Column(length: 16)]
-    #[Groups(groups: ['agent:get'])]
+    #[Groups(groups: ['agent:get', 'kycdoc:get'])]
     private ?string $id = null;
 
     #[ORM\Column(length: 30)]
@@ -142,7 +142,7 @@ class Agent
     private ?string $postName = null;
 
     #[ORM\Column(length: 120)]
-    #[Groups(groups: ['agent:get'])]
+    #[Groups(groups: ['agent:get', 'kycdoc:get'])]
     private ?string $fullName = null;
 
     #[ORM\Column(length: 2)]
