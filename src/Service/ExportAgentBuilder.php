@@ -13,71 +13,87 @@ class ExportAgentBuilder
     
     public function buildAll() : ReportResult
     {
-        $data = $this->repository->findAll();
+        $data = $this->repository->findAgents();
 
-        $rows = [];
-        $rows[] = $this->buildHeaders();
+        // Construire l'en-tête
+        $datas = [];
+        $datas[] = $this->buildHeaders();
+        
+        // Ajouter les données après les avoir correctement structurées
         foreach ($data as $row) {
-            $rows[] = [
-                'id' => $row->getId(),
-                'firstName' => $row->getFirstName(),
-                'lastName' => $row->getLastName(),
-                'postName' => $row->getPostName(),
-                'fullName' => $row->getFullName(),
-                'country' => $row->getCountry(),
-                'birthday' => $row->getBirthday(),
-                'kycStatus' => $row->getKycStatus(),
-                'maritalStatus' => $row->getMaritalStatus(),
-                'gender' => $row->getGender(),
-                'status' => $row->getStatus(),
-                'createdAt' => $row->getCreatedAt(),
-                'externalReferenceId' => $row->getExternalReferenceId(),
-                'createdBy' => $row->getCreatedBy(),
-                'updatedAt' => $row->getUpdatedAt(),
-                'identificationNumber' => $row->getIdentificationNumber(),
-                'address' => $row->getAddress(),
-                'address2' => $row->getAddress2(),
-                'deleted' => $row->isDeleted(),
-                'validatedBy' => $row->getValidatedBy(),
-                'validatedAt' => $row->getValidatedAt(),
-                'contractualNetPayUsd' => $row->getContractualNetPayUsd(),
-                'contractualNetPayCdf' => $row->getContractualNetPayCdf(),
-                'dateHire' => $row->getDateHire(),
-                'contratType' => $row->getContratType(),
-                'endContractDate' => $row->getEndContractDate(),
-                'annotation' => $row->getAnnotation(),
-                'placeBirth' => $row->getPlaceBirth(),
-                'socialSecurityId' => $row->getSocialSecurityId(),
-                'taxIdNumber' => $row->getTaxIdNumber(),
-                'bankAccountId' => $row->getBankAccountId(),
-                'dependent' => $row->getDependent(),
-                'emergencyContactPerson' => $row->getEmergencyContactPerson(),
-                'factSheet' => $row->isFactSheet(),
-                'onemValidatedContract' => $row->IsOnemValidatedContract(),
-                'birthCertificate' => $row->IsBirthCertificate(),
-                'marriageLicense' => $row->IsMarriageLicense(),
-                'site' => $row->getSite() ? $row->getSite()->__toString() : null,
-                'category' => $row->getCategory() ? $row->getCategory()->__toString() : null,
-                'functionTitle' => $row->getFunctionTitle() ? $row->getFunctionTitle()->__toString() : null,
-                'affectedLocation' => $row->getAffectedLocation() ? $row->getAffectedLocation()->__toString() : null,
-            ];
+            $datas[] = $this->flattenRow($row);
         }
 
-        return new ReportResult($rows);
+        return new ReportResult($datas);
     }
 
     private function buildHeaders(): array
     {
         return [
-            'ID', 'First Name', 'Last Name', 'Post Name', 'Full Name', 'Country', 'Birthday',
-            'KYC Status', 'Marital Status', 'Gender', 'Status', 'Created At', 'External Reference ID',
-            'Created By', 'Updated At', 'Identification Number', 'Address', 'Address 2', 'Deleted',
-            'Validated By', 'Validated At', 'Contractual Net Pay USD', 'Contractual Net Pay CDF',
-            'Date Hire', 'Contract Type', 'End Contract Date', 'Annotation', 'Place Birth',
-            'Social Security ID', 'Tax ID Number', 'Bank Account ID', 'Dependent', 'Emergency Contact Person',
-            'Fact Sheet', 'ONEM Validated Contract', 'Birth Certificate', 'Marriage License',
-            'Site', 'Category', 'Function Title', 'Affected Location'
+            'MATRICULE', 'NOM', 'POSTNOM', 'PRENOM', 'CATEGORIE', 'FONCTION', 'LIEU AFFECTATION', 'SITE',
+            'ANCIEN MATRICULE', 'NATIONALITE', 'LIEU DE NAISSANCE', 'DATE DE NAISSANCE', 'STATUT KYC', 'ÉTAT CIVIL', 'GENRE', 
+            'STATUT', 'N° TEL.', 'N° TEL. 2', 'ADRESSE PHYSIQUE', 'ADRESSE PHYSIQUE 2', 
+            'SALAIRE NET CONTRACTUEL USD', 'SALAIRE NET CONTRACTUEL CDF', 'DATE D\'EMBAUCHE', 'TYPE DE CONTRAT', 
+            'DATE FIN CONTRAT ET/OU PERIODE D\'ESSAI', 'ANNOTATION', 'N° CNSS', 'N° NIF', 'N° RIB', 'DEPENDANTS', 
+            'PERSONNE DE CONTACT EN CAS D\'URGENCE', 'FICHE SIGNALETIQUE', 'CONTRAT VISE ONEM', 'ACTE DE NAISSANCE', 'ACTE DE MARIAGE'
         ];
+
+    }
+
+    private function flattenRow(array $row): array
+    {
+        return [
+            $row['identificationNumber'],
+            $row['lastName'],
+            $row['postName'],
+            $row['firstName'],
+            $row['category'],
+            $row['functionTitle'],
+            $row['affectedLocation'],
+            $row['site'],
+            $row['oldIdentificationNumber'],
+            $row['country'],
+            $row['placeBirth'],
+            $this->formatDate($row['birthday']),
+            $row['kycStatus'],
+            $row['maritalStatus'],
+            $row['gender'],
+            $row['status'],
+            $row['contact'],
+            $row['contact2'],
+            $row['address'],
+            $row['address2'],
+            $row['contractualNetPayUsd'],
+            $row['contractualNetPayCdf'],
+            $this->formatDate($row['dateHire']),
+            $row['contratType'],
+            $this->formatDate($row['endContractDate']),
+            $row['annotation'],
+            $row['socialSecurityId'],
+            $row['taxIdNumber'],
+            $row['bankAccountId'],
+            $row['dependent'],
+            $row['emergencyContactPerson'],
+            $row['factSheet'],
+            $row['onemValidatedContract'],
+            $row['birthCertificate'],
+            $row['marriageLicense']
+        ];
+    }
+
+    private function formatDate(\DateTimeInterface|string|null $date): ?string
+    {
+        if ($date === null) {
+            return null;
+        }
+
+        if ($date instanceof \DateTimeInterface) {
+            return $date->format('d-m-Y');
+        }
+
+        $formattedDate = \DateTimeImmutable::createFromFormat('Y-m-d', $date);
+
+        return $formattedDate ? $formattedDate->format('d-m-Y') : $date;
     }
 
 }

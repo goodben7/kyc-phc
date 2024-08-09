@@ -29,6 +29,59 @@ class AgentRepository extends ServiceEntityRepository
         ;
     }
 
+    /**
+     * @return array
+     */
+    public function findAgents(): array
+    {
+        $results = $this->createQueryBuilder('a')
+            ->select([
+                'a.identificationNumber AS identificationNumber',
+                'a.lastName AS lastName',
+                'a.postName AS postName',
+                'a.firstName AS firstName',
+                'c.label AS category',
+                'f.label AS functionTitle',
+                'al.label AS affectedLocation',
+                's.label AS site',
+                'a.oldIdentificationNumber AS oldIdentificationNumber',
+                'a.country AS country',
+                'a.placeBirth AS placeBirth',
+                'a.birthday AS birthday',
+                'a.kycStatus AS kycStatus',
+                'a.maritalStatus AS maritalStatus',
+                'a.gender AS gender',
+                'a.status AS status',
+                'a.contact AS contact',
+                'a.contact2 AS contact2',
+                'a.address AS address',
+                'a.address2 AS address2',
+                'a.contractualNetPayUsd AS contractualNetPayUsd',
+                'a.contractualNetPayCdf AS contractualNetPayCdf',
+                'a.dateHire AS dateHire',
+                'a.contratType AS contratType',
+                'a.endContractDate AS endContractDate',
+                'a.annotation AS annotation',
+                'a.socialSecurityId AS socialSecurityId',
+                'a.taxIdNumber AS taxIdNumber',
+                'a.bankAccountId AS bankAccountId',
+                'a.dependent AS dependent',
+                'a.emergencyContactPerson AS emergencyContactPerson',
+                'a.factSheet AS factSheet',
+                'a.onemValidatedContract AS onemValidatedContract',
+                'a.birthCertificate AS birthCertificate',
+                'a.marriageLicense AS marriageLicense'
+            ])
+            ->leftJoin('a.site', 's')
+            ->leftJoin('a.category', 'c')
+            ->leftJoin('a.functionTitle', 'f')
+            ->leftJoin('a.affectedLocation', 'al')
+            ->getQuery()
+            ->getArrayResult();
+
+        return $results;
+    }
+
 //    /**
 //     * @return Agent[] Returns an array of Agent objects
 //     */
