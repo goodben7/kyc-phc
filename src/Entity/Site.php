@@ -60,13 +60,13 @@ class Site
     #[ORM\GeneratedValue( strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(IdGenerator::class)]
     #[ORM\Column(length: 16)]
-    #[Groups(groups: ['site:get'])]
+    #[Groups(groups: ['site:get', 'agent:get'])]
     private ?string $id = null;
 
     #[ORM\Column(length: 120)]
     #[Assert\NotNull]
     #[Assert\NotBlank]
-    #[Groups(groups: ['site:get', 'site:post', 'site:patch'])]
+    #[Groups(groups: ['site:get', 'site:post', 'site:patch', 'agent:get'])]
     private ?string $label = null;
 
     #[ORM\Column(length: 255, nullable: true)]

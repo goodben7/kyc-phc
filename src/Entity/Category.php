@@ -60,13 +60,13 @@ class Category
     #[ORM\GeneratedValue( strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(IdGenerator::class)]
     #[ORM\Column(length: 16)]
-    #[Groups(groups: ['category:get'])]
+    #[Groups(groups: ['category:get', 'agent:get'])]
     private ?string $id = null;
 
     #[ORM\Column(length: 120)]
     #[Assert\NotNull]
     #[Assert\NotBlank]
-    #[Groups(groups: ['category:get', 'category:post', 'category:patch'])]
+    #[Groups(groups: ['category:get', 'category:post', 'category:patch', 'agent:get'])]
     private ?string $label = null;
 
     #[ORM\Column(length: 255, nullable: true)]

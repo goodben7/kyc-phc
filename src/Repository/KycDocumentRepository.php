@@ -16,6 +16,29 @@ class KycDocumentRepository extends ServiceEntityRepository
         parent::__construct($registry, KycDocument::class);
     }
 
+    /**
+     * @return array
+     */
+    public function findDocuments(): array
+    {
+        $qb = $this->createQueryBuilder('k');
+
+        $qb->select([
+            'k.id',
+            'k.type',
+            'k.documentRefNumber',
+            'k.status',
+            'k.filePath',
+            'k.fileSize',
+            'a.id AS agentId',  
+            'a.fullName AS agentFullName',
+            'a.identificationNumber AS identificationNumber'
+        ])
+        ->leftJoin('k.agent', 'a');
+
+        return $qb->getQuery()->getArrayResult();
+    }
+
     //    /**
     //     * @return KycDocument[] Returns an array of KycDocument objects
     //     */

@@ -67,7 +67,7 @@ class ExportAgentBuilder
     private function flattenRow(array $row): array
     {
         return [
-            $row['identificationNumber'],
+            $row['identificationNumber'] ?? 'Non assigné',
             $row['lastName'],
             $row['postName'],
             $row['firstName'],
@@ -75,7 +75,7 @@ class ExportAgentBuilder
             $row['functionTitle'],
             $row['affectedLocation'],
             $row['site'],
-            $row['oldIdentificationNumber'],
+            $row['oldIdentificationNumber'] ?? 'Non renseigné',
             $row['country'],
             $row['placeBirth'],
             $this->formatDate($row['birthday']),
@@ -98,10 +98,10 @@ class ExportAgentBuilder
             $row['bankAccountId'],
             $row['dependent'],
             $row['emergencyContactPerson'],
-            $row['factSheet'],
-            $row['onemValidatedContract'],
-            $row['birthCertificate'],
-            $row['marriageLicense']
+            $row['factSheet'] ? 'OUI':'NON',
+            $row['onemValidatedContract'] ? 'OUI':'NON',
+            $row['birthCertificate'] ? 'OUI':'NON',
+            $row['marriageLicense'] ? 'OUI':'NON'
         ];
     }
 
