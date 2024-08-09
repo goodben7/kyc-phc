@@ -30,11 +30,19 @@ class AgentRepository extends ServiceEntityRepository
     }
 
     /**
+     * @param array $filters
+     * [
+     *     'site' => 'nom_site',
+     *     'category' => 'nom_catégorie',
+     *     'functionTitle' => 'nom_fonction',
+     *     'affectedLocation' => 'nom_lieu_affectation'
+     * ]
+     * 
      * @return array
      */
-    public function findAgents(): array
+    public function findAgents(array $filters = []): array
     {
-        $results = $this->createQueryBuilder('a')
+        $qb = $this->createQueryBuilder('a')
             ->select([
                 'a.identificationNumber AS identificationNumber',
                 'a.lastName AS lastName',
@@ -75,9 +83,29 @@ class AgentRepository extends ServiceEntityRepository
             ->leftJoin('a.site', 's')
             ->leftJoin('a.category', 'c')
             ->leftJoin('a.functionTitle', 'f')
-            ->leftJoin('a.affectedLocation', 'al')
-            ->getQuery()
-            ->getArrayResult();
+            ->leftJoin('a.affectedLocation', 'al');
+
+        if (!empty($filters['site'])) {
+            $qb->andWhere('s.id = :site')
+            ->setParameter('site', $filters['site']);
+        }
+
+        if (!empty($filters['category'])) {
+            $qb->andWhere('c.id = :category')
+            ->setParameter('category', $filters['category']);
+        }
+
+        if (!empty($filters['functionTitle'])) {
+            $qb->andWhere('f.id = :functionTitle')
+            ->setParameter('functionTitle', $filters['functionTitle']);
+        }
+
+        if (!empty($filters['affectedLocation'])) {
+            $qb->andWhere('al.id = :affectedLocation')
+            ->setParameter('affectedLocation', $filters['affectedLocation']);
+        }
+
+        $results = $qb->getQuery()->getArrayResult();
 
         return $results;
     }

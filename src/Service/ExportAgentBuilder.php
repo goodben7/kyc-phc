@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\ValueObject\ReportResult;
+use App\Model\AgentFilterInterface;
 use App\Repository\AgentRepository;
 
 class ExportAgentBuilder
@@ -11,20 +12,43 @@ class ExportAgentBuilder
     {   
     }
     
-    public function buildAll() : ReportResult
+    public function buildAll(array $filters = []) : ReportResult
     {
-        $data = $this->repository->findAgents();
+        
+        $filtersArray = $this->transformFilters($filters);
 
-        // Construire l'en-tête
+        $data = $this->repository->findAgents($filtersArray);
+
         $datas = [];
         $datas[] = $this->buildHeaders();
         
-        // Ajouter les données après les avoir correctement structurées
         foreach ($data as $row) {
             $datas[] = $this->flattenRow($row);
         }
 
         return new ReportResult($datas);
+    }
+
+    /**
+     * @param array $filters
+     * @return array
+     */
+    private function transformFilters(array $filters): array
+    {
+        $transformedFilters = [];
+
+        foreach ($filters as $filter) {
+            if ($filter instanceof AgentFilterInterface) {
+                $transformedFilters[] = [
+                    'site' => $filter->site,
+                    'category' => $filter->category,
+                    'functionTitle' => $filter->functionTitle,
+                    'affectedLocation' => $filter->affectedLocation,
+                ];
+            }
+        }
+
+        return $transformedFilters[0] ?? [];
     }
 
     private function buildHeaders(): array

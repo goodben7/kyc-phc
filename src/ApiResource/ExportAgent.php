@@ -8,6 +8,7 @@ use App\State\ExportAgentProcessor;
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use Symfony\Component\Serializer\Annotation\Groups;
+use App\Model\AgentFilterInterface;
 
 #[ApiResource(
     shortName: "ExportAgent",
@@ -30,7 +31,11 @@ class ExportAgent
         public ?Uuid $id = null,
 
         #[Groups(['export_agent:get'])]
-        public array $datasets = []
+        public array $datasets = [],
+
+        /** @var AgentFilterInterface [] */
+        #[Groups(['export_agent:post'])]
+        public ?array $filters = null
     )
     {
     }
