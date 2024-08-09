@@ -19,12 +19,11 @@ class ExportAgentProcessor implements ProcessorInterface
      */
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = [])
     {
-        
-        if(!is_null($data->filters)){
-            $result = $this->manager->buildAll($data->filters); 
-            return ExportAgentResultDto::from($result);
-        }
-        $result = $this->manager->buildAll(); 
+    
+        $filters = is_array($data->filters) ? $data->filters : [];
+
+        $result = !empty($filters) ? $this->manager->buildAll($filters) : $this->manager->buildAll();
+
         return ExportAgentResultDto::from($result);
     }
 }
