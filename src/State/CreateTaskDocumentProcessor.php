@@ -12,6 +12,7 @@ use App\Message\Command\CheckPendingTasksCommand;
 
 class CreateTaskDocumentProcessor implements ProcessorInterface
 {
+    const DIRECTORY = 'media';
 
     public function __construct(
         private EntityManagerInterface $em,
@@ -26,7 +27,7 @@ class CreateTaskDocumentProcessor implements ProcessorInterface
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = [])
     {
  
-        $file = $this->manager->save($data->file);
+        $file = $this->manager->save($data->file, self::DIRECTORY);
 
         $task = new Task();
 
@@ -42,7 +43,7 @@ class CreateTaskDocumentProcessor implements ProcessorInterface
         $task->setData2($data->documentRefNumber);
         $task->setData3($data->agentId);
         $task->setData4($file);
-        $task->setData5($data->data5);
+        $task->setData5($data->data5); 
         $task->setData6($data->data6);
 
         $this->em->persist($task);

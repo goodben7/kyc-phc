@@ -12,24 +12,25 @@ class TaskFileManager implements TaskFileManagerInterface
 
     public function __construct(string $projectDir)
     {
-        $this->projectDir = $projectDir . '/public/media';
+        $this->projectDir = $projectDir;
     }
 
-    public function save(UploadedFile $file): string
+    public function save(UploadedFile $file, string $directory): string
     {
+        $targetDir = $this->projectDir .'/'. $directory;
         $task = md5(uniqid()) . '.' . $file->getClientOriginalExtension();
-        $file->move($this->projectDir, $task);
+        $file->move($targetDir, $task);
         return $task;
     }
 
-    public function getPath(string $fileId): string
+    public function getPath(string $fileId, string $directory): string
     {
-        return $this->projectDir . '/' . $fileId;
+        return $this->projectDir .'/'. $directory .'/'. $fileId;
     }
 
-    public function getSize(string $fileId): int
+    public function getSize(string $fileId, string $directory): int
     {
-        $file = new File($this->getPath($fileId));
+        $file = new File($this->getPath($fileId, $directory));
         return $file->getSize();
     }
 }

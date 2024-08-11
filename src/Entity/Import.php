@@ -2,12 +2,28 @@
 
 namespace App\Entity;
 
+use App\Dto\CreateImportDto;
+use ApiPlatform\Metadata\Post;
 use Symfony\Component\Uid\Uuid;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ImportRepository;
+use App\State\CreateImportProcessor;
+use ApiPlatform\Metadata\ApiResource;
 use Symfony\Bridge\Doctrine\Types\UuidType;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ImportRepository::class)]
+#[ApiResource(
+    normalizationContext: ['groups' => 'import:get'],
+    operations: [
+        new Post(
+            inputFormats: ['multipart' => ['multipart/form-data']],
+            security: 'is_granted("ROLE_IMPORT_CREATE")',
+            input: CreateImportDto::class,
+            processor: CreateImportProcessor::class,
+        )
+    ]
+)]
 class Import
 {
     const STATUS_IDLE = 'I';
@@ -25,49 +41,68 @@ class Import
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
     #[ORM\Column(type: UuidType::NAME, unique: true)]
+    #[Groups(groups: ['import:get'])]
     private ?Uuid $id = null;
 
     #[ORM\Column(length: 30)]
+    #[Groups(groups: ['import:get'])]
     private ?string $type = null;
 
     #[ORM\Column(length: 15)]
+    #[Groups(groups: ['import:get'])]
     private ?string $method = null;
 
     #[ORM\Column(length: 1)]
-    private ?string $status = null;
+    #[Groups(groups: ['import:get'])]
+    private ?string $status = self::STATUS_IDLE;
 
     #[ORM\Column(length: 16)]
+    #[Groups(groups: ['import:get'])]
     private ?string $createdBy = null;
 
     #[ORM\Column]
+    #[Groups(groups: ['import:get'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(groups: ['import:get'])]
     private ?string $message = null;
 
     #[ORM\Column]
+    #[Groups(groups: ['import:get'])]
     private ?int $loaded = 0;
 
     #[ORM\Column]
+    #[Groups(groups: ['import:get'])]
     private ?int $treated = 0;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(groups: ['import:get'])]
     private ?string $data1 = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(groups: ['import:get'])]
     private ?string $data2 = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(groups: ['import:get'])]
     private ?string $data3 = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(groups: ['import:get'])]
     private ?string $data4 = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(groups: ['import:get'])]
     private ?string $data5 = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(groups: ['import:get'])]
     private ?string $data6 = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(groups: ['import:get'])]
+    private ?string $description = null;
 
     public function getId(): ?Uuid
     {
@@ -238,6 +273,18 @@ class Import
     public function setData6(?string $data6): static
     {
         $this->data6 = $data6;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): static
+    {
+        $this->description = $description;
 
         return $this;
     }
