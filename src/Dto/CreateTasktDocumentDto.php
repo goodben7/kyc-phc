@@ -4,7 +4,6 @@ namespace App\Dto;
 
 use App\Entity\Task;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class CreateTasktDocumentDto
 {
@@ -33,7 +32,7 @@ class CreateTasktDocumentDto
 
     #[Assert\NotNull]
     #[Assert\NotBlank]
-    public UploadedFile $file;
+    public string $file;
 
     #[Assert\NotNull]
     #[Assert\NotBlank]

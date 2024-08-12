@@ -4,6 +4,7 @@ namespace App\State;
 
 use App\Entity\Task;
 use ApiPlatform\Metadata\Operation;
+use App\Service\UploadedBase64File;
 use App\Model\TaskFileManagerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use ApiPlatform\State\ProcessorInterface;
@@ -17,7 +18,8 @@ class CreateTaskDocumentProcessor implements ProcessorInterface
     public function __construct(
         private EntityManagerInterface $em,
         private CommandBusInterface $bus,
-        private TaskFileManagerInterface $manager)
+        private TaskFileManagerInterface $manager,
+        private UploadedBase64File $service)
     {
     }
 
@@ -27,7 +29,8 @@ class CreateTaskDocumentProcessor implements ProcessorInterface
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = [])
     {
  
-        $file = $this->manager->save($data->file, self::DIRECTORY);
+        $file = $this->service->handleBase64Image($data->file);
+        $file = $this->manager->save($file, self::DIRECTORY);
 
         $task = new Task();
 

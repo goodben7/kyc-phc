@@ -51,7 +51,6 @@ use Symfony\Component\Validator\Constraints as Assert;
         ),
         new Post(
             uriTemplate: "tasks/documents",
-            inputFormats: ['multipart' => ['multipart/form-data']],
             security: 'is_granted("ROLE_TASK_CREATE")',
             input: CreateTasktDocumentDto::class,
             processor: CreateTaskDocumentProcessor::class,
