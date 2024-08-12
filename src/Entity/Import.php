@@ -3,19 +3,35 @@
 namespace App\Entity;
 
 use App\Dto\CreateImportDto;
+use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Post;
 use Symfony\Component\Uid\Uuid;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\ApiFilter;
 use App\Repository\ImportRepository;
 use App\State\CreateImportProcessor;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
 use Symfony\Bridge\Doctrine\Types\UuidType;
+use ApiPlatform\Doctrine\Orm\Filter\DateFilter;
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Doctrine\Orm\State\ItemProvider;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Doctrine\Orm\State\CollectionProvider;
 
 #[ORM\Entity(repositoryClass: ImportRepository::class)]
 #[ApiResource(
     normalizationContext: ['groups' => 'import:get'],
     operations: [
+        new Get(
+            security: 'is_granted("ROLE_IMPORT_DETAILS")',
+            provider: ItemProvider::class
+        ),
+        new GetCollection(
+            security: 'is_granted("ROLE_IMPORT_LIST")',
+            provider: CollectionProvider::class
+        ),
         new Post(
             inputFormats: ['multipart' => ['multipart/form-data']],
             security: 'is_granted("ROLE_IMPORT_CREATE")',
@@ -24,6 +40,15 @@ use Symfony\Component\Serializer\Annotation\Groups;
         )
     ]
 )]
+#[ApiFilter(SearchFilter::class, properties: [
+    'id' => 'exact',
+    'status' => 'exact',
+    'type' => 'exact',
+    'method' => 'exact',
+    'createdBy' => 'exact'
+])]
+#[ApiFilter(OrderFilter::class, properties: ['createdAt'])]
+#[ApiFilter(DateFilter::class, properties: ['createdAt'])]
 class Import
 {
     const STATUS_IDLE = 'I';
