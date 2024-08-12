@@ -15,9 +15,11 @@ use App\State\CreateTaskProcessor;
 use ApiPlatform\Metadata\ApiFilter;
 use App\Dto\CreateTasktDocumentDto;
 use App\State\CreateTasksProcessor;
+use App\Dto\CreateTaskstDocumentDto;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
 use App\State\CreateTaskDocumentProcessor;
+use App\State\CreateTasksDocumentProcessor;
 use ApiPlatform\Doctrine\Orm\Filter\DateFilter;
 use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Doctrine\Orm\State\ItemProvider;
@@ -54,6 +56,12 @@ use Symfony\Component\Validator\Constraints as Assert;
             security: 'is_granted("ROLE_TASK_CREATE")',
             input: CreateTasktDocumentDto::class,
             processor: CreateTaskDocumentProcessor::class,
+        ),
+        new Post(
+            uriTemplate: "tasks/documents/load",
+            security: 'is_granted("ROLE_TASK_CREATE")',
+            input: CreateTaskstDocumentDto::class,
+            processor: CreateTasksDocumentProcessor::class,
         )
     ]
 )]
