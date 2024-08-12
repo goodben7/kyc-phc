@@ -10,6 +10,7 @@ use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
 use App\Repository\KycDocumentRepository;
+use App\State\CreateKycDocumentProcessor;
 use App\State\VerifyKycDocumentProcessor;
 use ApiPlatform\Doctrine\Orm\Filter\DateFilter;
 use Symfony\Component\HttpFoundation\File\File;
@@ -21,6 +22,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use ApiPlatform\Doctrine\Orm\State\CollectionProvider;
 use Symfony\Component\Validator\Constraints as Assert;
 use ApiPlatform\Doctrine\Common\State\PersistProcessor;
+use App\Dto\CreateKycDocumentDto;
 
 #[Vich\Uploadable]
 #[ORM\Entity(repositoryClass: KycDocumentRepository::class)]
@@ -48,6 +50,13 @@ use ApiPlatform\Doctrine\Common\State\PersistProcessor;
             security: 'is_granted("ROLE_KYCDOC_VERIFY")',
             processor: VerifyKycDocumentProcessor::class,
             validationContext: ['groups' => ['verify_doc']],
+            status: 200
+        ),
+        new Post(
+            uriTemplate: "kyc_documents/upload",
+            security: 'is_granted("ROLE_KYCDOC_CREATE")',
+            input: CreateKycDocumentDto::class,
+            processor: CreateKycDocumentProcessor::class,
             status: 200
         )
     ]
