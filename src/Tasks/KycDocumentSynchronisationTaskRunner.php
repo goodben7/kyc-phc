@@ -23,6 +23,7 @@ class KycDocumentSynchronisationTaskRunner  implements TaskRunnerInterface
     private $manager;
 
     const SUPPORT_TYPE = "DOCUMENT";
+    const DIRECTORY = 'media';
 
     public function __construct(
         private readonly EntityManagerInterface $em,
@@ -81,8 +82,8 @@ class KycDocumentSynchronisationTaskRunner  implements TaskRunnerInterface
             $kycDocument->setDocumentRefNumber($task->getData2());
             $kycDocument->setUploadedAt(new \DateTimeImmutable());
             $kycDocument->setFilePath($task->getData4());
-            $kycDocument->setContentUrl($this->manager->getPath($task->getData4()));
-            $kycDocument->setFileSize($this->manager->getSize($task->getData4()));
+            $kycDocument->setContentUrl($this->manager->getPath($task->getData4(), self::DIRECTORY));
+            $kycDocument->setFileSize($this->manager->getSize($task->getData4(), self::DIRECTORY));
             $kycDocument->setAgent($agent);
             $kycDocument->setExternalReferenceId($task->getExternalReferenceId());
 
