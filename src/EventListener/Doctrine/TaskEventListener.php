@@ -42,7 +42,7 @@ class TaskEventListener
 
 
         if ($task instanceof Task) {
-            $task->setSynchronizedBy($user->getId());
+            $task->setSynchronizedBy($task->getCreatedBy() === 'SYSTEM' ? 'SYSTEM' : $user->getId());
             $task->setSynchronizedAt(new \DateTimeImmutable());
             $this->em->persist($task);
             $this->em->flush();
