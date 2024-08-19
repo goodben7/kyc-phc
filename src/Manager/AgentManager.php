@@ -7,13 +7,13 @@ use App\Entity\Agent;
 use App\Entity\KycDocument;
 use App\Model\NewAgentModel;
 use App\Exception\AgentException;
+use App\Repository\AgentRepository;
 use App\Message\Query\GetUserDetails;
 use App\Message\Query\QueryBusInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Exception\UnavailableDataException;
 use Symfony\Bundle\SecurityBundle\Security;
 use App\Exception\UnauthorizedActionException;
-use App\Repository\AgentRepository;
 
 class AgentManager
 {
@@ -79,7 +79,7 @@ class AgentManager
         return $a;
     }
 
-    private function findAgnet(string $agentId): Agent 
+    private function findAgent(string $agentId): Agent 
     {
         $agent = $this->em->find(Agent::class, $agentId);
 
@@ -103,7 +103,7 @@ class AgentManager
 
 
     public function delete(string $agentId) {
-        $agent = $this->findAgnet($agentId);
+        $agent = $this->findAgent($agentId);
 
         if ($agent->isDeleted()) {
             throw new UnauthorizedActionException('this action is not allowed');
@@ -125,7 +125,7 @@ class AgentManager
     }
 
     public function validateAgent(string $agentId): Agent {
-        $agent = $this->findAgnet($agentId);
+        $agent = $this->findAgent($agentId);
 
         $userId = $this->security->getUser()->getUserIdentifier();
 
@@ -143,6 +143,36 @@ class AgentManager
         $agent->setIdentificationNumber($this->generateIdentificationNumber());
 
         $this->em->persist($agent);
+        $this->em->flush();
+
+        return $agent;
+    }
+
+    public function validateAgents(array $agents): Agent 
+    {
+
+        $userId = $this->security->getUser()->getUserIdentifier();
+
+        /** @var User $user */
+            
+        $user = $this->queries->ask(new GetUserDetails($userId));
+
+        foreach ($agents as $agentId){
+            $agent = $this->findAgent($agentId);
+
+            if ($agent->getStatus() === Agent::STATUS_VALIDATE) {
+                throw new AgentException(sprintf("the agent %s is already validated", $agent->getFullName()));
+            }
+
+            $agent->setStatus(agent::STATUS_VALIDATE);
+            $agent->setUpdatedAt(new \DateTimeImmutable('now'));
+            $agent->setValidatedAt(new \DateTimeImmutable('now'));
+            $agent->setValidatedBy($user->getId());
+            $agent->setIdentificationNumber($this->generateIdentificationNumber());
+
+            $this->em->persist($agent);
+        }
+
         $this->em->flush();
 
         return $agent;
