@@ -6,6 +6,7 @@ use App\Model\NewAgentModel;
 use ApiPlatform\Metadata\Get;
 use App\Doctrine\IdGenerator;
 use ApiPlatform\Metadata\Post;
+use App\Dto\ValidateAgentsDto;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Delete;
 use Doctrine\ORM\Mapping as ORM;
@@ -15,6 +16,7 @@ use App\State\CreateAgentProcessor;
 use App\State\DeleteAgentProcessor;
 use ApiPlatform\Metadata\ApiResource;
 use App\State\ValidateAgentProcessor;
+use App\State\ValidateAgentsProcessor;
 use ApiPlatform\Metadata\GetCollection;
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Doctrine\Orm\Filter\DateFilter;
@@ -60,6 +62,13 @@ use ApiPlatform\Doctrine\Common\State\PersistProcessor;
             uriTemplate: "agents/{id}/validation",
             security: 'is_granted("ROLE_AGENT_VALIDATE")',
             processor: ValidateAgentProcessor::class,
+            status: 200
+        ),
+        new Post(
+            uriTemplate: "agents/validations",
+            security: 'is_granted("ROLE_AGENT_VALIDATE")',
+            input: ValidateAgentsDto::class,
+            processor: ValidateAgentsProcessor::class,
             status: 200
         )
     ]
