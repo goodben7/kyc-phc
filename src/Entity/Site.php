@@ -87,6 +87,10 @@ class Site
     #[ORM\OneToMany(targetEntity: Agent::class, mappedBy: 'site')]
     private Collection $agents;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(groups: ['site:get', 'site:post', 'site:patch'])]
+    private ?string $rate = null;
+
     public function __construct()
     {
         $this->agents = new ArrayCollection();
@@ -178,5 +182,17 @@ class Site
     public function __tostring(): string
     {
         return $this->label;
+    }
+
+    public function getRate(): ?string
+    {
+        return $this->rate;
+    }
+
+    public function setRate(?string $rate): static
+    {
+        $this->rate = $rate;
+
+        return $this;
     }
 }
