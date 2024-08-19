@@ -2,17 +2,22 @@
 
 namespace App\MessageHandler\Command;
 
+use App\Entity\Site;
 use App\Entity\Task;
 use App\Entity\Import;
 use League\Csv\Reader;
+use App\Entity\Category;
 use League\Csv\Statement;
 use Psr\Log\LoggerInterface;
+use App\Entity\FunctionTitle;
 use App\Model\ImportInterface;
 use Symfony\Component\Uid\Uuid;
+use App\Entity\AffectedLocation;
 use App\Repository\ImportRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use App\Message\Command\CreateTaskCommand;
+use App\Exception\UnavailableDataException;
 use App\Message\Command\CommandBusInterface;
 use App\Message\Command\CommandHandlerInterface;
 use App\Message\Command\CheckPendingTasksCommand;
@@ -76,14 +81,48 @@ class CreateTaskCommandHandler implements CommandHandlerInterface
     {
         try{
 
+            /** @var Site|null $site */
+            $site = null;
+            if (!empty($record['site'])) {
+                $site = $this->em->getRepository(Site::class)->findOneBy(['code' => $record['site']]);
+                if (is_null($site))
+                    throw new UnavailableDataException(sprintf("The site with CODE %s doesn't exist", $record['site']));
+            }
+
+            /** @var Category|null $category */
+            $category = null;
+            if (!empty($record['category'])) {
+                $category = $this->em->getRepository(Category::class)->findOneBy(['code' => $record['category']]);
+                if (is_null($category))
+                    throw new UnavailableDataException(sprintf("The category with CODE %s doesn't exist", $record['category']));
+            }
+
+            /** @var FunctionTitle|null $functionTitle */
+            $functionTitle = null;
+            if (!empty($record['functionTitle'])) {
+                $functionTitle = $this->em->getRepository(FunctionTitle::class)->findOneBy(['code' => $record['functionTitle']]);
+                if (is_null($functionTitle))
+                    throw new UnavailableDataException(sprintf("The function with CODE %s doesn't exist", $record['functionTitle']));
+            }
+
+            /** @var AffectedLocation|null $affectedLocation */
+            $affectedLocation = null;
+            if (!empty($record['affectedLocation'])) {
+                $affectedLocation = $this->em->getRepository(AffectedLocation::class)->findOneBy(['code' => $record['affectedLocation']]);
+                if (is_null($affectedLocation))
+                    throw new UnavailableDataException(sprintf("The affected Location with CODE %s doesn't exist", $record['affectedLocation']));
+            }
+
+            $externalReferenceId = Uuid::v1()->toString();
+
             $task = new Task();
 
             $task->setType($import->getType());
             $task->setMethod($import->getMethod());
-            $task->setData($this->createJsonFromRecord($record));
+            $task->setData($this->createJsonFromRecord($record, $site, $category, $functionTitle, $affectedLocation, $externalReferenceId));
             $task->setCreatedBy('SYSTEM');
             $task->setCreatedAt(new \DateTimeImmutable());
-            $task->setExternalReferenceId(Uuid::v1()->toString());
+            $task->setExternalReferenceId($externalReferenceId);
             $task->setStatus(Import::STATUS_IDLE);
             $task->setData3($import->getData3());
             $task->setData4($import->getData4());
@@ -100,16 +139,16 @@ class CreateTaskCommandHandler implements CommandHandlerInterface
         }
     }
 
-    private function createJsonFromRecord(array $record): array
+    private function createJsonFromRecord(array $record, ?Site $site, ?Category $category, ?FunctionTitle $functionTitle, ?AffectedLocation $affectedLocation, string $externalReferenceId): array
     {
 
         $data = [
-            'site'                    => $record['site'] ?? null,
+            'site'                    => $site?->getId(),
             'gender'                  => $record['gender'] ?? null,
             'address'                 => $record['address'] ?? null,
             'country'                 => $record['country'] ?? null,
             'birthday'                => $record['birthday'] ?? null,
-            'category'                => $record['category'] ?? null,
+            'category'                => $category?->getId(),
             'dateHire'                => $record['dateHire'] ?? null,
             'lastName'                => $record['lastName'] ?? null,
             'postName'                => $record['postName'] ?? null,
@@ -121,14 +160,14 @@ class CreateTaskCommandHandler implements CommandHandlerInterface
             'contratType'             => $record['contratType'] ?? null,
             'taxIdNumber'             => $record['taxIdNumber'] ?? null,
             'bankAccountId'           => $record['bankAccountId'] ?? null,
-            'functionTitle'           => $record['functionTitle'] ?? null,
+            'functionTitle'           => $functionTitle?->getId(),
             'maritalStatus'           => $record['maritalStatus'] ?? null,
             'endContractDate'         => $record['endContractDate'] ?? null,
             'marriageLicense'         => isset($record['marriageLicense']) ? boolval($record['marriageLicense']) : null,
-            'affectedLocation'        => $record['affectedLocation'] ?? null,
+            'affectedLocation'        => $affectedLocation?->getId(),
             'birthCertificate'        => isset($record['birthCertificate']) ? boolval($record['birthCertificate']) : null,
             'socialSecurityId'        => $record['socialSecurityId'] ?? null,
-            'externalReferenceId'     => $record['externalReferenceId'] ?? null,
+            'externalReferenceId'     => $externalReferenceId,
             'contractualNetPayCdf'    => $record['contractualNetPayCdf'] ?? null,
             'contractualNetPayUsd'    => $record['contractualNetPayUsd'] ?? null,
             'onemValidatedContract'   => isset($record['onemValidatedContract']) ? boolval($record['onemValidatedContract']) : null,
@@ -137,4 +176,4 @@ class CreateTaskCommandHandler implements CommandHandlerInterface
 
         return $data;
     }
-}
+    }

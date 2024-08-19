@@ -95,7 +95,7 @@ class AgentSynchronisationTaskRunner  implements TaskRunnerInterface
             if (!is_null($task->getDataValue('functionTitle'))) {
                 $functionTitle = $this->em->getRepository(FunctionTitle::class)->find($task->getDataValue('functionTitle'));
                 if (is_null($functionTitle))
-                    throw new UnavailableDataException(sprintf("The category with ID %s doesn't exist", $task->getDataValue('functionTitle')));
+                    throw new UnavailableDataException(sprintf("The function with ID %s doesn't exist", $task->getDataValue('functionTitle')));
             }
 
             /** @var AffectedLocation|null $affectedLocation */
@@ -103,7 +103,7 @@ class AgentSynchronisationTaskRunner  implements TaskRunnerInterface
             if (!is_null($task->getDataValue('affectedLocation'))) {
                 $affectedLocation = $this->em->getRepository(AffectedLocation::class)->find($task->getDataValue('affectedLocation'));
                 if (is_null($affectedLocation))
-                    throw new UnavailableDataException(sprintf("The category with ID %s doesn't exist", $task->getDataValue('affectedLocation')));
+                    throw new UnavailableDataException(sprintf("The affected Location with ID %s doesn't exist", $task->getDataValue('affectedLocation')));
             }
 
             $model = new NewAgentModel();
@@ -185,7 +185,7 @@ class AgentSynchronisationTaskRunner  implements TaskRunnerInterface
             if (!is_null($task->getDataValue('functionTitle'))) {
                 $functionTitle = $this->em->getRepository(FunctionTitle::class)->find($task->getDataValue('functionTitle'));
                 if (is_null($functionTitle))
-                    throw new UnavailableDataException(sprintf("The category with ID %s doesn't exist", $task->getDataValue('functionTitle')));
+                    throw new UnavailableDataException(sprintf("The function with ID %s doesn't exist", $task->getDataValue('functionTitle')));
             }
 
             /** @var AffectedLocation|null $affectedLocation */
@@ -193,7 +193,7 @@ class AgentSynchronisationTaskRunner  implements TaskRunnerInterface
             if (!is_null($task->getDataValue('affectedLocation'))) {
                 $affectedLocation = $this->em->getRepository(AffectedLocation::class)->find($task->getDataValue('affectedLocation'));
                 if (is_null($affectedLocation))
-                    throw new UnavailableDataException(sprintf("The category with ID %s doesn't exist", $task->getDataValue('affectedLocation')));
+                    throw new UnavailableDataException(sprintf("The Affected Location with ID %s doesn't exist", $task->getDataValue('affectedLocation')));
             }
 
             $agent->setFirstName($task->getDataValue('firstName'));
