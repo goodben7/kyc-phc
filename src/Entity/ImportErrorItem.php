@@ -38,7 +38,7 @@ class ImportErrorItem
     #[Groups(['item:get'])]
     private ?int $id = null;
 
-    #[ORM\Column(type: 'uuid')]
+    #[ORM\Column(length: 255)]
     #[Groups(['item:get'])]
     private ?string $importId = null;
 

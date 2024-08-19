@@ -176,4 +176,4 @@ class CreateTaskCommandHandler implements CommandHandlerInterface
 
         return $data;
     }
-    }
+}
