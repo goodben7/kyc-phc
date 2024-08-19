@@ -3,19 +3,35 @@
 namespace App\Entity;
 
 use App\Dto\CreateImportDto;
+use ApiPlatform\Metadata\Get;
+use App\Doctrine\IdGenerator;
 use ApiPlatform\Metadata\Post;
-use Symfony\Component\Uid\Uuid;
+use App\Model\ImportInterface;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\ApiFilter;
 use App\Repository\ImportRepository;
 use App\State\CreateImportProcessor;
 use ApiPlatform\Metadata\ApiResource;
-use Symfony\Bridge\Doctrine\Types\UuidType;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Doctrine\Orm\Filter\DateFilter;
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Doctrine\Orm\State\ItemProvider;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Doctrine\Orm\State\CollectionProvider;
 
 #[ORM\Entity(repositoryClass: ImportRepository::class)]
 #[ApiResource(
     normalizationContext: ['groups' => 'import:get'],
     operations: [
+        new Get(
+            security: 'is_granted("ROLE_IMPORT_DETAILS")',
+            provider: ItemProvider::class
+        ),
+        new GetCollection(
+            security: 'is_granted("ROLE_IMPORT_LIST")',
+            provider: CollectionProvider::class
+        ),
         new Post(
             inputFormats: ['multipart' => ['multipart/form-data']],
             security: 'is_granted("ROLE_IMPORT_CREATE")',
@@ -24,11 +40,23 @@ use Symfony\Component\Serializer\Annotation\Groups;
         )
     ]
 )]
-class Import
+#[ApiFilter(SearchFilter::class, properties: [
+    'id' => 'exact',
+    'status' => 'exact',
+    'type' => 'exact',
+    'method' => 'exact',
+    'createdBy' => 'exact'
+])]
+#[ApiFilter(OrderFilter::class, properties: ['createdAt'])]
+#[ApiFilter(DateFilter::class, properties: ['createdAt'])]
+class Import implements ImportInterface
 {
+    const ID_PREFIX = "IM";
+
     const STATUS_IDLE = 'I';
     const STATUS_INPROGRESS = 'P';
     const STATUS_TERMINATED = 'T';
+    const STATUS_LOADED = 'L';
     const STATUS_FAILED = 'F';
 
     const METHOD_CREATE = 'C';
@@ -38,11 +66,11 @@ class Import
     const TYPE_DOCUMENT = 'DOCUMENT';
 
     #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
-    #[ORM\Column(type: UuidType::NAME, unique: true)]
+    #[ORM\GeneratedValue( strategy: 'CUSTOM')]
+    #[ORM\CustomIdGenerator(IdGenerator::class)]
+    #[ORM\Column(length: 16)]
     #[Groups(groups: ['import:get'])]
-    private ?Uuid $id = null;
+    private ?string $id = null;
 
     #[ORM\Column(length: 30)]
     #[Groups(groups: ['import:get'])]
@@ -104,7 +132,7 @@ class Import
     #[Groups(groups: ['import:get'])]
     private ?string $description = null;
 
-    public function getId(): ?Uuid
+    public function getId(): ?string
     {
         return $this->id;
     }

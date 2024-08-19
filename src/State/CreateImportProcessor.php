@@ -10,6 +10,7 @@ use App\Model\TaskFileManagerInterface;
 use App\Message\Query\QueryBusInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use ApiPlatform\State\ProcessorInterface;
+use App\Message\Command\CreateTaskCommand;
 use Symfony\Bundle\SecurityBundle\Security;
 use App\Message\Command\CommandBusInterface;
 
@@ -60,7 +61,7 @@ class CreateImportProcessor implements ProcessorInterface
         $this->em->persist($import);
         $this->em->flush();
 
-        //$this->bus->dispatch(new CheckPendingTasksCommand());
+        $this->bus->dispatch(new CreateTaskCommand($import));
         
         return $import;
     }
