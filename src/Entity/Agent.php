@@ -588,7 +588,7 @@ class Agent
     #[ORM\PreUpdate]
     public function buildFullName()
     {
-        $this->fullName = ucfirst($this->firstName) . ' ' . strtoupper($this->postName) . ' ' . strtoupper($this->lastName);
+        $this->fullName = ucfirst($this->firstName) . ' ' . strtoupper($this->lastName) . ' ' . strtoupper($this->postName);
     
         return $this;
     }
