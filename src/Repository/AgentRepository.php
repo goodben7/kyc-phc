@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Agent;
+use App\Entity\Site;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -109,6 +110,38 @@ class AgentRepository extends ServiceEntityRepository
 
         return $results;
     }
+
+    public function findLastAgent(): ?Agent
+    {
+        return $this->createQueryBuilder('a')
+            ->orderBy('a.id', 'DESC')  
+            ->setMaxResults(1)       
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;  
+    }
+
+    public function countAgentsWithIdentificationNumber(): int
+    {
+        return (int) $this->createQueryBuilder('a')
+            ->select('COUNT(a.id)')
+            ->where('a.identificationNumber IS NOT NULL')  
+            ->getQuery()
+            ->getSingleScalarResult()
+        ;
+    }
+
+    public function countAgentsWithIdentificationNumberBySite(Site $site): int
+    {
+        return (int) $this->createQueryBuilder('a')
+            ->select('COUNT(a.id)')
+            ->where('a.identificationNumber IS NOT NULL')
+            ->andWhere('a.site = :site') 
+            ->setParameter('site', $site)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
 
 //    /**
 //     * @return Agent[] Returns an array of Agent objects
