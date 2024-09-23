@@ -2,6 +2,7 @@
 
 namespace App\Manager;
 
+use App\Entity\Site;
 use App\Entity\User;
 use App\Entity\Agent;
 use App\Entity\KycDocument;
@@ -136,11 +137,15 @@ class AgentManager
             throw new AgentException("the agent is already validated");
         }
 
+        if (null === $agent->getSite()) {
+            throw new UnavailableDataException(sprintf('cannot find site with agent: %s', $agent->getFullName()));
+        }
+
         $agent->setStatus(agent::STATUS_VALIDATE);
         $agent->setUpdatedAt(new \DateTimeImmutable('now'));
         $agent->setValidatedAt(new \DateTimeImmutable('now'));
         $agent->setValidatedBy($user->getId());
-        $agent->setIdentificationNumber($this->generateIdentificationNumber());
+        $agent->setIdentificationNumber($this->generateIdentificationNumber($agent->getSite()->getCode()));
 
         $this->em->persist($agent);
         $this->em->flush();
@@ -164,25 +169,39 @@ class AgentManager
                 throw new AgentException(sprintf("the agent %s is already validated", $agent->getFullName()));
             }
 
+            if (null === $agent->getSite()) {
+                throw new UnavailableDataException(sprintf('cannot find site with agent: %s', $agent->getFullName()));
+            }
+
             $agent->setStatus(agent::STATUS_VALIDATE);
             $agent->setUpdatedAt(new \DateTimeImmutable('now'));
             $agent->setValidatedAt(new \DateTimeImmutable('now'));
             $agent->setValidatedBy($user->getId());
-            $agent->setIdentificationNumber($this->generateIdentificationNumber());
+            
+            $agent->setIdentificationNumber($this->generateIdentificationNumber($agent->getSite()->getCode()));
 
             $this->em->persist($agent);
+            $this->em->flush();
         }
-
-        $this->em->flush();
 
         return $agent;
     }
 
-    private function generateIdentificationNumber(): string
+    private function generateIdentificationNumber(string $siteCode): string
     {
-        $randomHex = bin2hex(random_bytes(8));
-        return 'ID_' . strtoupper($randomHex);
+        $site = $this->em->getRepository(Site::class)->findOneBy(['code' => $siteCode]);
+        
+        if (null === $site) {
+            throw new UnavailableDataException(sprintf('cannot find site with code: %s', $siteCode));
+        }
+
+        $agentCount = $this->repository->countAgentsWithIdentificationNumberBySite($site);
+
+        $nextNumber = $agentCount + 1;
+
+        return sprintf('PHC%05d%s', $nextNumber, strtoupper($siteCode));
     }
+
 
     private function findDocument(string $documentId): KycDocument 
     {
