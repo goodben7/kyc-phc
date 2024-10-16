@@ -91,9 +91,16 @@ class Site
     #[Groups(groups: ['site:get', 'site:post', 'site:patch'])]
     private ?string $rate = null;
 
+    /**
+     * @var Collection<int, Division>
+     */
+    #[ORM\OneToMany(targetEntity: Division::class, mappedBy: 'site')]
+    private Collection $divisions;
+
     public function __construct()
     {
         $this->agents = new ArrayCollection();
+        $this->divisions = new ArrayCollection();
     }
 
     public function getId(): ?string
@@ -192,6 +199,36 @@ class Site
     public function setRate(?string $rate): static
     {
         $this->rate = $rate;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Division>
+     */
+    public function getDivisions(): Collection
+    {
+        return $this->divisions;
+    }
+
+    public function addDivision(Division $division): static
+    {
+        if (!$this->divisions->contains($division)) {
+            $this->divisions->add($division);
+            $division->setSite($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDivision(Division $division): static
+    {
+        if ($this->divisions->removeElement($division)) {
+            // set the owning side to null (unless already changed)
+            if ($division->getSite() === $this) {
+                $division->setSite(null);
+            }
+        }
 
         return $this;
     }
