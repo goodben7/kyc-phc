@@ -105,6 +105,7 @@ use ApiPlatform\Doctrine\Common\State\PersistProcessor;
     'category' => 'exact',
     'functionTitle' => 'exact',
     'affectedLocation' => 'exact',
+    'division' => 'exact',
 ])]
 #[ApiFilter(OrderFilter::class, properties: ['createdAt', 'updatedAt', 'validatedAt', 'dateHire', 'endContractDate'])]
 #[ApiFilter(DateFilter::class, properties: ['createdAt', 'updatedAt', 'validatedAt', 'dateHire', 'endContractDate'])]
@@ -319,6 +320,10 @@ class Agent
     #[ORM\ManyToOne(inversedBy: 'agents', cascade: ['persist'])]
     #[Groups(groups: ['agent:get', 'agent:patch'])]
     private ?AffectedLocation $affectedLocation = null;
+
+    #[ORM\ManyToOne(inversedBy: 'agents', cascade: ['persist'])]
+    #[Groups(groups: ['agent:get', 'agent:patch'])]
+    private ?Division $division = null;
 
     public function __construct()
     {
@@ -931,6 +936,18 @@ class Agent
     public function setAffectedLocation(?AffectedLocation $affectedLocation): static
     {
         $this->affectedLocation = $affectedLocation;
+
+        return $this;
+    }
+
+    public function getDivision(): ?Division
+    {
+        return $this->division;
+    }
+
+    public function setDivision(?Division $division): static
+    {
+        $this->division = $division;
 
         return $this;
     }

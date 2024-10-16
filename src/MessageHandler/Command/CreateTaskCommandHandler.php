@@ -7,6 +7,7 @@ use App\Entity\Task;
 use App\Entity\Import;
 use League\Csv\Reader;
 use App\Entity\Category;
+use App\Entity\Division;
 use League\Csv\Statement;
 use Psr\Log\LoggerInterface;
 use App\Entity\FunctionTitle;
@@ -113,13 +114,21 @@ class CreateTaskCommandHandler implements CommandHandlerInterface
                     throw new UnavailableDataException(sprintf("The affected Location with CODE %s doesn't exist", $record['affectedLocation']));
             }
 
+            /** @var Division|null $division */
+            $division = null;
+            if (!empty($record['division'])) {
+                $division = $this->em->getRepository(Division::class)->findOneBy(['code' => $record['division']]);
+                if (is_null($division))
+                    throw new UnavailableDataException(sprintf("The division with CODE %s doesn't exist", $record['division']));
+            }
+
             $externalReferenceId = Uuid::v1()->toString();
 
             $task = new Task();
 
             $task->setType($import->getType());
             $task->setMethod($import->getMethod());
-            $task->setData($this->createJsonFromRecord($record, $site, $category, $functionTitle, $affectedLocation, $externalReferenceId));
+            $task->setData($this->createJsonFromRecord($record, $site, $category, $functionTitle, $affectedLocation, $division, $externalReferenceId));
             $task->setCreatedBy('SYSTEM');
             $task->setCreatedAt(new \DateTimeImmutable());
             $task->setExternalReferenceId($externalReferenceId);
@@ -139,7 +148,7 @@ class CreateTaskCommandHandler implements CommandHandlerInterface
         }
     }
 
-    private function createJsonFromRecord(array $record, ?Site $site, ?Category $category, ?FunctionTitle $functionTitle, ?AffectedLocation $affectedLocation, string $externalReferenceId): array
+    private function createJsonFromRecord(array $record, ?Site $site, ?Category $category, ?FunctionTitle $functionTitle, ?AffectedLocation $affectedLocation, ?Division $division, string $externalReferenceId): array
     {
 
         $data = [
@@ -165,6 +174,7 @@ class CreateTaskCommandHandler implements CommandHandlerInterface
             'endContractDate'         => $record['endContractDate'] ?? null,
             'marriageLicense'         => isset($record['marriageLicense']) ? boolval($record['marriageLicense']) : null,
             'affectedLocation'        => $affectedLocation?->getId(),
+            'division'                => $division?->getId(),
             'birthCertificate'        => isset($record['birthCertificate']) ? boolval($record['birthCertificate']) : null,
             'socialSecurityId'        => $record['socialSecurityId'] ?? null,
             'externalReferenceId'     => $externalReferenceId,

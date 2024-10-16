@@ -11,6 +11,7 @@ use Psr\Log\LoggerInterface;
 use App\Entity\FunctionTitle;
 use App\Manager\AgentManager;
 use App\Entity\AffectedLocation;
+use App\Entity\Division;
 use App\Model\TaskRunnerInterface;
 use App\Repository\TaskRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -106,6 +107,14 @@ class AgentSynchronisationTaskRunner  implements TaskRunnerInterface
                     throw new UnavailableDataException(sprintf("The affected Location with ID %s doesn't exist", $task->getDataValue('affectedLocation')));
             }
 
+            /** @var Division|null $division */
+            $division = null;
+            if (!is_null($task->getDataValue('division'))) {
+                $division = $this->em->getRepository(Division::class)->find($task->getDataValue('division'));
+                if (is_null($division))
+                    throw new UnavailableDataException(sprintf("The Division with ID %s doesn't exist", $task->getDataValue('division')));
+            }
+
             $model = new NewAgentModel();
             $model->firstName = $task->getDataValue('firstName');
             $model->lastName = $task->getDataValue('lastName');
@@ -142,6 +151,8 @@ class AgentSynchronisationTaskRunner  implements TaskRunnerInterface
             $model->category = $category;
             $model->functionTitle = $functionTitle;
             $model->affectedLocation = $affectedLocation;
+            $model->division = $division;
+
 
             $this->manager->createAgent($model);
 
@@ -196,6 +207,14 @@ class AgentSynchronisationTaskRunner  implements TaskRunnerInterface
                     throw new UnavailableDataException(sprintf("The Affected Location with ID %s doesn't exist", $task->getDataValue('affectedLocation')));
             }
 
+            /** @var Division|null $division */
+            $division = null;
+            if (!is_null($task->getDataValue('division'))) {
+                $division = $this->em->getRepository(Division::class)->find($task->getDataValue('division'));
+                if (is_null($division))
+                    throw new UnavailableDataException(sprintf("The Division with ID %s doesn't exist", $task->getDataValue('division')));
+            }
+
             $agent->setFirstName($task->getDataValue('firstName'));
             $agent->setLastName($task->getDataValue('lastName'));
             $agent->setPostName($task->getDataValue('postName'));
@@ -230,6 +249,7 @@ class AgentSynchronisationTaskRunner  implements TaskRunnerInterface
             $agent->setCategory($category);
             $agent->setFunctionTitle($functionTitle);
             $agent->setAffectedLocation($affectedLocation);
+            $agent->setDivision($division);
     
             $this->manager->update($agent);
     
