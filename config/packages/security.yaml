@@ -53,6 +53,10 @@ security:
             - ROLE_IMPORT_LIST
             - ROLE_IMPORT_ERROR_ITEM_LIST
             - ROLE_IMPORT_ERROR_ITEM_DETAILS
+            - ROLE_DIVISION_DETAILS
+            - ROLE_DIVISION_LIST
+            - ROLE_DIVISION_CREATE
+            - ROLE_DIVISION_UPDATE
         ROLE_SUPER_ADMIN:
             - ROLE_USER_DETAILS
             - ROLE_USER_LIST
@@ -88,6 +92,10 @@ security:
             - ROLE_IMPORT_LIST
             - ROLE_IMPORT_ERROR_ITEM_LIST
             - ROLE_IMPORT_ERROR_ITEM_DETAILS
+            - ROLE_DIVISION_DETAILS
+            - ROLE_DIVISION_LIST
+            - ROLE_DIVISION_CREATE
+            - ROLE_DIVISION_UPDATE
         ROLE_RECRUITER:
             - ROLE_USER_DETAILS
             - ROLE_USER_CHANGE_PWD
@@ -115,6 +123,8 @@ security:
             - ROLE_IMPORT_LIST
             - ROLE_IMPORT_ERROR_ITEM_LIST
             - ROLE_IMPORT_ERROR_ITEM_DETAILS
+            - ROLE_DIVISION_DETAILS
+            - ROLE_DIVISION_LIST
 
 
     firewalls:
