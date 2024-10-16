@@ -44,6 +44,7 @@ class ExportAgentBuilder
                     'category' => $filter->category,
                     'functionTitle' => $filter->functionTitle,
                     'affectedLocation' => $filter->affectedLocation,
+                    'division' => $filter->division,
                 ];
             }
         }
@@ -54,7 +55,7 @@ class ExportAgentBuilder
     private function buildHeaders(): array
     {
         return [
-            'MATRICULE', 'NOM', 'POSTNOM', 'PRENOM', 'CATEGORIE', 'FONCTION', 'LIEU AFFECTATION', 'SITE',
+            'MATRICULE', 'NOM', 'POSTNOM', 'PRENOM', 'CATEGORIE', 'FONCTION', 'LIEU AFFECTATION', 'DIVISION', 'SITE',
             'ANCIEN MATRICULE', 'NATIONALITE', 'LIEU DE NAISSANCE', 'DATE DE NAISSANCE', 'STATUT KYC', 'ÉTAT CIVIL', 'GENRE', 
             'STATUT', 'N° TEL.', 'N° TEL. 2', 'ADRESSE PHYSIQUE', 'ADRESSE PHYSIQUE 2', 
             'SALAIRE NET CONTRACTUEL USD', 'SALAIRE NET CONTRACTUEL CDF', 'DATE D\'EMBAUCHE', 'TYPE DE CONTRAT', 
@@ -74,6 +75,7 @@ class ExportAgentBuilder
             $row['category'],
             $row['functionTitle'],
             $row['affectedLocation'],
+            $row['division'],
             $row['site'],
             $row['oldIdentificationNumber'] ?? 'Non renseigné',
             $row['country'],

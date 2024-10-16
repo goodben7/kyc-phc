@@ -37,6 +37,7 @@ class AgentRepository extends ServiceEntityRepository
      *     'category' => 'nom_catégorie',
      *     'functionTitle' => 'nom_fonction',
      *     'affectedLocation' => 'nom_lieu_affectation'
+     *     'division' => 'division'
      * ]
      * 
      * @return array
@@ -52,6 +53,7 @@ class AgentRepository extends ServiceEntityRepository
                 'c.label AS category',
                 'f.label AS functionTitle',
                 'al.label AS affectedLocation',
+                'd.label AS division',
                 's.label AS site',
                 'a.oldIdentificationNumber AS oldIdentificationNumber',
                 'a.country AS country',
@@ -84,7 +86,8 @@ class AgentRepository extends ServiceEntityRepository
             ->leftJoin('a.site', 's')
             ->leftJoin('a.category', 'c')
             ->leftJoin('a.functionTitle', 'f')
-            ->leftJoin('a.affectedLocation', 'al');
+            ->leftJoin('a.affectedLocation', 'al')
+            ->leftJoin('a.division', 'd');
 
         if (!empty($filters['site'])) {
             $qb->andWhere('s.id = :site')
@@ -104,6 +107,11 @@ class AgentRepository extends ServiceEntityRepository
         if (!empty($filters['affectedLocation'])) {
             $qb->andWhere('al.id = :affectedLocation')
             ->setParameter('affectedLocation', $filters['affectedLocation']);
+        }
+
+        if (!empty($filters['division'])) {
+            $qb->andWhere('d.id = :division')
+            ->setParameter('division', $filters['division']);
         }
 
         $results = $qb->getQuery()->getArrayResult();

@@ -6,6 +6,8 @@ use ApiPlatform\Metadata\Get;
 use App\Doctrine\IdGenerator;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Patch;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\DivisionRepository;
@@ -72,6 +74,17 @@ class Division
     #[Groups(groups: ['division:get', 'division:post', 'division:patch'])]
     private ?Site $site = null;
 
+    /**
+     * @var Collection<int, Agent>
+     */
+    #[ORM\OneToMany(targetEntity: Agent::class, mappedBy: 'division')]
+    private Collection $agents;
+
+    public function __construct()
+    {
+        $this->agents = new ArrayCollection();
+    }
+
     public function getId(): ?string
     {
         return $this->id;
@@ -133,6 +146,36 @@ class Division
     public function setSite(?Site $site): static
     {
         $this->site = $site;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Agent>
+     */
+    public function getAgents(): Collection
+    {
+        return $this->agents;
+    }
+
+    public function addAgent(Agent $agent): static
+    {
+        if (!$this->agents->contains($agent)) {
+            $this->agents->add($agent);
+            $agent->setDivision($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAgent(Agent $agent): static
+    {
+        if ($this->agents->removeElement($agent)) {
+            // set the owning side to null (unless already changed)
+            if ($agent->getDivision() === $this) {
+                $agent->setDivision(null);
+            }
+        }
 
         return $this;
     }

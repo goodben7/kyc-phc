@@ -73,6 +73,7 @@ class AgentManager
         $a->setCategory($model->category);
         $a->setFunctionTitle($model->functionTitle);
         $a->setAffectedLocation($model->affectedLocation);
+        $a->setDivision($model->division);
 
         $this->em->persist($a);
         $this->em->flush();

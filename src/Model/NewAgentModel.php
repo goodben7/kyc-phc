@@ -4,6 +4,7 @@ namespace App\Model;
 use App\Entity\Site;
 use App\Entity\Agent;
 use App\Entity\Category;
+use App\Entity\Division;
 use App\Entity\FunctionTitle;
 use App\Entity\AffectedLocation;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -109,4 +110,6 @@ class NewAgentModel {
     public ?FunctionTitle $functionTitle = null;
 
     public ?AffectedLocation $affectedLocation = null;
+
+    public ?Division $division = null;
 }

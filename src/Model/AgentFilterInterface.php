@@ -17,4 +17,7 @@ class AgentFilterInterface
 
     #[Groups(['export_agent:post'])]
     public ?string $affectedLocation = null;
+
+    #[Groups(['export_agent:post'])]
+    public ?string $division = null;
 }
