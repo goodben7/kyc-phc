@@ -157,6 +157,7 @@ class CreateTaskCommandHandler implements CommandHandlerInterface
             'address'                 => $record['address'] ?? null,
             'country'                 => $record['country'] ?? null,
             'birthday'                => $record['birthday'] ?? null,
+            'oldIdentificationNumber' => $record['oldIdentificationNumber'] ?? null,
             'category'                => $category?->getId(),
             'dateHire'                => $record['dateHire'] ?? null,
             'lastName'                => $record['lastName'] ?? null,

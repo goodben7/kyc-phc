@@ -32,25 +32,21 @@ class NewAgentModel {
 
     #[
         Assert\NotBlank(),
-        Assert\NotNull(),
         Assert\Country(alpha3: false)
     ]
     public ?string $country = null;
 
     #[
-        Assert\NotNull(),
         Assert\Date
     ]
     public ?string $birthday = null;
 
     #[
-        Assert\NotNull(),
         Assert\Choice(callback: [Agent::class, "getMaritalStatusAsChoices"])
     ]
     public ?string $maritalStatus= "S";
 
     #[
-        Assert\NotNull(),
         Assert\Choice(callback: [Agent::class, "getGenderAsChoices"])
     ]
     public ?string $gender= "M";

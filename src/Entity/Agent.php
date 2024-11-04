@@ -155,11 +155,11 @@ class Agent
     #[Groups(groups: ['agent:get', 'kycdoc:get'])]
     private ?string $fullName = null;
 
-    #[ORM\Column(length: 2)]
+    #[ORM\Column(length: 2, nullable: true)]
     #[Groups(groups: ['agent:get', 'agent:patch'])]
     private ?string $country = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     #[Groups(groups: ['agent:get', 'agent:patch'])]
     private ?\DateTimeImmutable $birthday = null;
 
@@ -167,11 +167,11 @@ class Agent
     #[Groups(groups: ['agent:get'])]
     private ?string $kycStatus = null;
 
-    #[ORM\Column(length: 1)]
+    #[ORM\Column(length: 1, nullable: true)]
     #[Groups(groups: ['agent:get', 'agent:patch'])]
     private ?string $maritalStatus = null;
 
-    #[ORM\Column(length: 1)]
+    #[ORM\Column(length: 1, nullable: true)]
     #[Groups(groups: ['agent:get', 'agent:patch'])]
     private ?string $gender = null;
 
