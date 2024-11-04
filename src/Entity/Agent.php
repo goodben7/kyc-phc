@@ -107,7 +107,7 @@ use ApiPlatform\Doctrine\Common\State\PersistProcessor;
     'affectedLocation' => 'exact',
     'division' => 'exact',
 ])]
-#[ApiFilter(OrderFilter::class, properties: ['createdAt', 'updatedAt', 'validatedAt', 'dateHire', 'endContractDate'])]
+#[ApiFilter(OrderFilter::class, properties: ['createdAt', 'updatedAt', 'validatedAt', 'dateHire', 'endContractDate', 'dependent'])]
 #[ApiFilter(DateFilter::class, properties: ['createdAt', 'updatedAt', 'validatedAt', 'dateHire', 'endContractDate'])]
 class Agent
 {
