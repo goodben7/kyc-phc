@@ -200,7 +200,7 @@ class AgentManager
 
         $nextNumber = $agentCount + 1;
 
-        return sprintf('PHC%05d%s', $nextNumber, strtoupper($siteCode));
+        return sprintf('LYB%05d%s', $nextNumber, strtoupper($siteCode));
     }
 
 
