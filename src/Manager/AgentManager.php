@@ -30,7 +30,9 @@ class AgentManager
     public function createAgent(NewAgentModel $model): Agent 
     {
 
-        $userId = $this->security->getUser()->getUserIdentifier();
+        $user = $this->security->getUser();
+
+        $userId = $user ? $user->getUserIdentifier() : 'SYSTEM';
 
         /** @var User $user */
         $user = $this->queries->ask(new GetUserDetails($userId));
@@ -43,7 +45,7 @@ class AgentManager
         $a->setCountry($model->country);
         $a->setMaritalStatus($model->maritalStatus);
         $a->setCreatedAt($model->createdAt ?? new \DateTimeImmutable('now'));
-        $a->setCreatedBy($model->createdBy ?? $user->getId());
+        $a->setCreatedBy($model->createdBy ?? ($user ? $user->getId() : 'SYSTEM'));
         $a->setStatus(Agent::STATUS_PENDING);
         $a->setKycStatus(Agent::KYC_STATUS_NOT_VERIFIED);
         $a->setGender($model->gender);

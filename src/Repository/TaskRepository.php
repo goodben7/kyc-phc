@@ -59,15 +59,16 @@ class TaskRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return Task[]
+     * @return Task[] 
      */
     public function getPendingTasks(): array
     {
         return $this->createQueryBuilder('t')
-            ->where('t.status IN (:statuses)')
-            ->setParameter('statuses', [Task::STATUS_IDLE, Task::STATUS_INPROGRESS])
+            ->Where('t.status = :status')
+            ->setParameter('status', Task::STATUS_IDLE)
             ->getQuery()
-            ->getResult();
+            ->getResult()
+        ;
     }
     
     //    /**

@@ -2,12 +2,12 @@
 
 namespace App\Command;
 
-use App\Message\Command\CommandBusInterface;
 use Symfony\Component\Console\Command\Command;
 use App\Message\Command\CheckPendingTasksCommand;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(
@@ -16,7 +16,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 )]
 class ExecuteTasksCommand extends Command
 {
-    public function __construct(private CommandBusInterface $bus)
+    public function __construct(private MessageBusInterface $bus)
     {
         parent::__construct();
     }

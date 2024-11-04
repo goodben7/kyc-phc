@@ -36,6 +36,14 @@ class ImportRepository extends ServiceEntityRepository
         $query->execute();
     }
 
+    public function updateImporttreated(string $id, int $treated): void
+    {
+        $query = $this->em->createQuery(sprintf('UPDATE %s t SET t.treated = :treated WHERE t.id = :id', Import::class));
+        $query->setParameter('id', $id);
+        $query->setParameter('treated', $treated);
+        $query->execute();
+    }
+
     public function addImportErrorItem(string $id, string $message, ?int $loading): void
     {
         $importErrorItem = new ImportErrorItem();
@@ -47,6 +55,21 @@ class ImportRepository extends ServiceEntityRepository
         $this->em->persist($importErrorItem);
         $this->em->flush();
     }
+
+    public function getImportTreated(string $id): ?int
+    {
+        $result = $this->em
+            ->createQueryBuilder()
+            ->select('t.treated')
+            ->from(Import::class, 't')
+            ->where('t.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        return $result ? $result['treated'] : 0;
+    }
+
 
 
     //    /**

@@ -5,16 +5,16 @@ namespace App\MessageHandler\Command;
 use Psr\Log\LoggerInterface;
 use App\Repository\TaskRepository;
 use App\Message\Command\PendingTaskCommand;
-use App\Message\Command\CommandBusInterface;
 use App\Message\Command\CommandHandlerInterface;
 use App\Message\Command\CheckPendingTasksCommand;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 class CheckPendingTasksCommandHandler implements CommandHandlerInterface
 {
     public function __construct(
         private TaskRepository $repository,
         private LoggerInterface $logger,
-        private CommandBusInterface $bus,
+        private MessageBusInterface $bus,
     )
     {
     } 

@@ -12,7 +12,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use ApiPlatform\State\ProcessorInterface;
 use App\Message\Command\CreateTaskCommand;
 use Symfony\Bundle\SecurityBundle\Security;
-use App\Message\Command\CommandBusInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 class CreateImportProcessor implements ProcessorInterface
 {
@@ -20,7 +20,7 @@ class CreateImportProcessor implements ProcessorInterface
 
     public function __construct(
         private EntityManagerInterface $em,
-        private CommandBusInterface $bus,
+        private MessageBusInterface $bus,
         private TaskFileManagerInterface $manager,
         private Security $security,
         private QueryBusInterface $queries,

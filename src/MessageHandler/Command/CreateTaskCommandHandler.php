@@ -19,9 +19,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use App\Message\Command\CreateTaskCommand;
 use App\Exception\UnavailableDataException;
-use App\Message\Command\CommandBusInterface;
 use App\Message\Command\CommandHandlerInterface;
 use App\Message\Command\CheckPendingTasksCommand;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 class CreateTaskCommandHandler implements CommandHandlerInterface
 {
@@ -30,7 +30,7 @@ class CreateTaskCommandHandler implements CommandHandlerInterface
         private ImportRepository $repository,
         private EntityManagerInterface $em,
         private ManagerRegistry $managerRegistry,
-        private CommandBusInterface $bus
+        private MessageBusInterface $bus
     )
     {
     }
@@ -133,7 +133,7 @@ class CreateTaskCommandHandler implements CommandHandlerInterface
             $task->setCreatedAt(new \DateTimeImmutable());
             $task->setExternalReferenceId($externalReferenceId);
             $task->setStatus(Import::STATUS_IDLE);
-            $task->setData3($import->getData3());
+            $task->setData3($import->getId());
             $task->setData4($import->getData4());
             $task->setData5($import->getData5());
             $task->setData6($import->getData6());

@@ -8,8 +8,8 @@ use App\Service\UploadedBase64File;
 use App\Model\TaskFileManagerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use ApiPlatform\State\ProcessorInterface;
-use App\Message\Command\CommandBusInterface;
 use App\Message\Command\CheckPendingTasksCommand;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 class CreateTaskDocumentProcessor implements ProcessorInterface
 {
@@ -17,7 +17,7 @@ class CreateTaskDocumentProcessor implements ProcessorInterface
 
     public function __construct(
         private EntityManagerInterface $em,
-        private CommandBusInterface $bus,
+        private MessageBusInterface $bus,
         private TaskFileManagerInterface $manager,
         private UploadedBase64File $service)
     {

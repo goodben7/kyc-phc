@@ -18,6 +18,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use App\Exception\UnavailableDataException;
 use App\Exception\InvalidActionInputException;
+use App\Repository\ImportRepository;
 
 class AgentSynchronisationTaskRunner  implements TaskRunnerInterface
 {
@@ -28,6 +29,7 @@ class AgentSynchronisationTaskRunner  implements TaskRunnerInterface
         private readonly LoggerInterface        $logger,
         private readonly AgentManager        $manager,
         private readonly TaskRepository $repository,
+        private readonly ImportRepository $importRepository,
         private readonly ManagerRegistry $managerRegistry,
     )
     {
@@ -157,6 +159,11 @@ class AgentSynchronisationTaskRunner  implements TaskRunnerInterface
             $this->manager->createAgent($model);
 
             $this->repository->updateTaskStatus($task->getId(), Task::STATUS_TERMINATED, null);
+            
+            if ($task->getData3() !== null) {
+                $treated = $this->importRepository->getImportTreated($task->getData3());
+                $this->importRepository->updateImportTreated($task->getData3(), ++$treated);
+            }
     
         } catch (\Exception $e) {
             $this->managerRegistry->resetManager();

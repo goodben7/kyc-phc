@@ -5,14 +5,14 @@ namespace App\Manager;
 use App\Entity\Task;
 use App\Model\NewTaskModel;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Message\Command\CommandBusInterface;
 use App\Message\Command\PendingTaskCommand;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 class TaskManager
 {
     public function __construct(
         private EntityManagerInterface $em,
-        private CommandBusInterface $bus,
+        private MessageBusInterface $bus,
     )
     {
     }
