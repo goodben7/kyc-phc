@@ -74,7 +74,7 @@ class KycDocumentSynchronisationTaskRunner  implements TaskRunnerInterface
             $agent = $this->queries->ask(new GetAgentDetailsByExternalReferenceId($task->getData3()));
 
             if (null === $agent){
-                throw new UnavailableDataException(sprintf("The agent with external Reference Id %s doesn't", $task->getData3()));   
+                throw new UnavailableDataException(sprintf("The agent with external Reference Id %s doesn't exist", $task->getData3()));   
             }
 
             $kycDocument = new KycDocument();
