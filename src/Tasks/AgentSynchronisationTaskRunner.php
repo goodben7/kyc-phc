@@ -122,7 +122,7 @@ class AgentSynchronisationTaskRunner  implements TaskRunnerInterface
             $model->lastName = $task->getDataValue('lastName');
             $model->postName = $task->getDataValue('postName');
             $model->country = $task->getDataValue('country');
-            $model->birthday = $task->getDataValue('birthday');
+            $model->birthday = $task->getDataValue('birthday') ? \DateTimeImmutable::createFromFormat('Y-m-d', $task->getDataValue('birthday')) : null;
             $model->maritalStatus = $task->getDataValue('maritalStatus');
             $model->gender = $task->getDataValue('gender');
             $model->createdAt = $task->getCreatedAt();
@@ -226,7 +226,7 @@ class AgentSynchronisationTaskRunner  implements TaskRunnerInterface
             $agent->setLastName($task->getDataValue('lastName'));
             $agent->setPostName($task->getDataValue('postName'));
             $agent->setCountry($task->getDataValue('country'));
-            $agent->setBirthday($birthday);
+            $agent->setBirthday($task->getDataValue('birthday') ? \DateTimeImmutable::createFromFormat('Y-m-d', $task->getDataValue('birthday')) : null);
             $agent->setMaritalStatus($task->getDataValue('maritalStatus'));
             $agent->setGender($task->getDataValue('gender'));
             $agent->setUpdatedBy($task->getCreatedBy());

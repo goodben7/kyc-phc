@@ -41,7 +41,7 @@ class AgentManager
         $a->setFirstName($model->firstName);
         $a->setLastName($model->lastName);
         $a->setPostName($model->postName);
-        $a->setBirthday(new \DateTimeImmutable($model->birthday));
+        $a->setBirthday($model->birthday);
         $a->setCountry($model->country);
         $a->setMaritalStatus($model->maritalStatus);
         $a->setCreatedAt($model->createdAt ?? new \DateTimeImmutable('now'));
