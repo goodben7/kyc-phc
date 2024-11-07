@@ -6,13 +6,13 @@ use Symfony\Component\Uid\Uuid;
 use App\ApiResource\ExecuteTask;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
-use App\Message\Command\CommandBusInterface;
 use App\Message\Command\CheckPendingTasksCommand;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 class ExecuteTasksProcessor implements ProcessorInterface
 {
 
-    public function __construct(private CommandBusInterface $bus)
+    public function __construct(private MessageBusInterface $bus)
     {
     }
     

@@ -7,8 +7,8 @@ use App\Manager\TaskManager;
 use ApiPlatform\Metadata\Operation;
 use Doctrine\ORM\EntityManagerInterface;
 use ApiPlatform\State\ProcessorInterface;
-use App\Message\Command\CommandBusInterface;
 use App\Message\Command\CheckPendingTasksCommand;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 class CreateTasksProcessor implements ProcessorInterface
 {
@@ -16,7 +16,7 @@ class CreateTasksProcessor implements ProcessorInterface
     public function __construct(
         private TaskManager $manager,
         private EntityManagerInterface $em,
-        private CommandBusInterface $bus,)
+        private MessageBusInterface $bus,)
     {
     }
 

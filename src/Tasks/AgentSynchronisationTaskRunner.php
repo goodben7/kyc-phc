@@ -18,6 +18,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use App\Exception\UnavailableDataException;
 use App\Exception\InvalidActionInputException;
+use App\Repository\ImportRepository;
 
 class AgentSynchronisationTaskRunner  implements TaskRunnerInterface
 {
@@ -28,6 +29,7 @@ class AgentSynchronisationTaskRunner  implements TaskRunnerInterface
         private readonly LoggerInterface        $logger,
         private readonly AgentManager        $manager,
         private readonly TaskRepository $repository,
+        private readonly ImportRepository $importRepository,
         private readonly ManagerRegistry $managerRegistry,
     )
     {
@@ -120,7 +122,7 @@ class AgentSynchronisationTaskRunner  implements TaskRunnerInterface
             $model->lastName = $task->getDataValue('lastName');
             $model->postName = $task->getDataValue('postName');
             $model->country = $task->getDataValue('country');
-            $model->birthday = $task->getDataValue('birthday');
+            $model->birthday = $task->getDataValue('birthday') ? \DateTimeImmutable::createFromFormat('Y-m-d', $task->getDataValue('birthday')) : null;
             $model->maritalStatus = $task->getDataValue('maritalStatus');
             $model->gender = $task->getDataValue('gender');
             $model->createdAt = $task->getCreatedAt();
@@ -157,6 +159,11 @@ class AgentSynchronisationTaskRunner  implements TaskRunnerInterface
             $this->manager->createAgent($model);
 
             $this->repository->updateTaskStatus($task->getId(), Task::STATUS_TERMINATED, null);
+            
+            if ($task->getData3() !== null) {
+                $treated = $this->importRepository->getImportTreated($task->getData3());
+                $this->importRepository->updateImportTreated($task->getData3(), ++$treated);
+            }
     
         } catch (\Exception $e) {
             $this->managerRegistry->resetManager();
@@ -219,7 +226,7 @@ class AgentSynchronisationTaskRunner  implements TaskRunnerInterface
             $agent->setLastName($task->getDataValue('lastName'));
             $agent->setPostName($task->getDataValue('postName'));
             $agent->setCountry($task->getDataValue('country'));
-            $agent->setBirthday($birthday);
+            $agent->setBirthday($task->getDataValue('birthday') ? \DateTimeImmutable::createFromFormat('Y-m-d', $task->getDataValue('birthday')) : null);
             $agent->setMaritalStatus($task->getDataValue('maritalStatus'));
             $agent->setGender($task->getDataValue('gender'));
             $agent->setUpdatedBy($task->getCreatedBy());

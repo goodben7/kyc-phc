@@ -139,19 +139,19 @@ class Agent
     #[Groups(groups: ['agent:get', 'kycdoc:get'])]
     private ?string $id = null;
 
-    #[ORM\Column(length: 30)]
+    #[ORM\Column(length: 30, nullable: true)]
     #[Groups(groups: ['agent:get', 'agent:patch'])]
     private ?string $firstName = null;
 
-    #[ORM\Column(length: 30)]
+    #[ORM\Column(length: 30, nullable: true)]
     #[Groups(groups: ['agent:get', 'agent:patch'])]
     private ?string $lastName = null;
 
-    #[ORM\Column(length: 30)]
+    #[ORM\Column(length: 30, nullable: true)]
     #[Groups(groups: ['agent:get', 'agent:patch'])]
     private ?string $postName = null;
 
-    #[ORM\Column(length: 120)]
+    #[ORM\Column(length: 120, nullable: true)]
     #[Groups(groups: ['agent:get', 'kycdoc:get'])]
     private ?string $fullName = null;
 
@@ -340,7 +340,7 @@ class Agent
         return $this->firstName;
     }
 
-    public function setFirstName(string $firstName): static
+    public function setFirstName(?string $firstName): static
     {
         $this->firstName = $firstName;
 
@@ -352,7 +352,7 @@ class Agent
         return $this->lastName;
     }
 
-    public function setLastName(string $lastName): static
+    public function setLastName(?string $lastName): static
     {
         $this->lastName = $lastName;
 
@@ -364,7 +364,7 @@ class Agent
         return $this->postName;
     }
 
-    public function setPostName(string $postName): static
+    public function setPostName(?string $postName): static
     {
         $this->postName = $postName;
 
@@ -376,7 +376,7 @@ class Agent
         return $this->fullName;
     }
 
-    public function setFullName(string $fullName): static
+    public function setFullName(?string $fullName): static
     {
         $this->fullName = $fullName;
 
@@ -388,7 +388,7 @@ class Agent
         return $this->country;
     }
 
-    public function setCountry(string $country): static
+    public function setCountry(?string $country): static
     {
         $this->country = $country;
 
@@ -400,7 +400,7 @@ class Agent
         return $this->birthday;
     }
 
-    public function setBirthday(\DateTimeImmutable $birthday): static
+    public function setBirthday(?\DateTimeImmutable $birthday): static
     {
         $this->birthday = $birthday;
 

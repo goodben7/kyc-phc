@@ -2,6 +2,8 @@
 
 namespace App\Message\Command;
 
-class CheckPendingTasksCommand implements CommandInterface
+use App\Event\EventMessageInterface;
+
+class CheckPendingTasksCommand implements EventMessageInterface
 {
 }

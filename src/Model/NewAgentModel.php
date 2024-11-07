@@ -12,15 +12,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 class NewAgentModel {
 
     #[
-        Assert\NotBlank(),
-        Assert\NotNull(),
         Assert\Length(max: 30)
     ]
     public ?string $firstName = null;
 
     #[
-        Assert\NotBlank(),
-        Assert\NotNull(),
         Assert\Length(max: 30)
     ]
     public ?string $lastName = null;
@@ -31,15 +27,11 @@ class NewAgentModel {
     public ?string $postName = null;
 
     #[
-        Assert\NotBlank(),
         Assert\Country(alpha3: false)
     ]
     public ?string $country = null;
 
-    #[
-        Assert\Date
-    ]
-    public ?string $birthday = null;
+    public ?\DateTimeImmutable $birthday = null;
 
     #[
         Assert\Choice(callback: [Agent::class, "getMaritalStatusAsChoices"])
