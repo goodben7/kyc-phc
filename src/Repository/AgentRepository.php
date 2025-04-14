@@ -150,6 +150,106 @@ class AgentRepository extends ServiceEntityRepository
             ->getSingleScalarResult();
     }
 
+    public function countAgentsBysite(): array
+    {
+        $result = $this->createQueryBuilder('a')
+            ->select('s.label AS site, COUNT(a.id) AS count')
+            ->leftJoin('a.site', 's')
+            ->groupBy('s.id')
+            ->getQuery()
+            ->getResult();
+
+        if (empty($result))
+            return ['total' => 0];
+
+        $data = array_column($result, 'count', 'site');
+        $data['total'] = array_sum($data);
+
+        return $data;
+    }
+
+    public function countAgentsByStatus(): array
+    {
+        $result = $this->createQueryBuilder('a')
+            ->select('a.status AS status, COUNT(a.id) AS count')
+            ->groupBy('a.status')
+            ->getQuery()
+            ->getResult();
+
+        if (empty($result))
+            return ['total' => 0];
+
+        $data = array_column($result, 'count', 'status');
+        $data['total'] = array_sum($data);
+
+        return $data;
+    }
+
+    public function countAgentsByDivision(): array
+    {
+        $result = $this->createQueryBuilder('a')
+            ->select('d.label AS division, COUNT(a.id) AS count')
+            ->leftJoin('a.division','d')
+            ->groupBy('d.id')
+            ->getQuery()
+            ->getResult();
+
+        if (empty($result))
+            return ['total' => 0];
+
+        $data = array_column($result, 'count','division');
+        $data['total'] = array_sum($data);
+
+        return $data;
+    }
+
+    public function countAgentsByCategory(?Site $site): array
+    {
+        $qb = $this->createQueryBuilder('a')
+            ->select('c.label AS category, COUNT(a.id) AS count')
+            ->leftJoin('a.category', 'c');
+
+        if ($site) {
+            $qb->where('a.site = :site')
+            ->setParameter('site', $site);
+        }
+
+        $qb->groupBy('c.id');
+
+        $result = $qb->getQuery()->getResult();
+
+        if (empty($result))
+            return ['total' => 0];
+
+        $data = array_column($result, 'count','category');
+        $data['total'] = array_sum($data);
+
+        return $data;
+    }
+
+    public function countAgentsByGender(?Site $site): array
+    {
+        $qb = $this->createQueryBuilder('a')
+            ->select('a.gender AS gender, COUNT(a.id) AS count')
+        ;
+
+        if ($site) {
+            $qb->where('a.site = :site')
+            ->setParameter('site', $site);
+        }
+        
+        $qb->groupBy('a.gender');
+        $result = $qb->getQuery()->getResult();
+
+        if (empty($result))
+            return ['total' => 0];
+
+        $data = array_column($result, 'count','gender');
+        $data['total'] = array_sum($data);
+        
+        return $data;
+    }
+
 
 //    /**
 //     * @return Agent[] Returns an array of Agent objects
