@@ -16,6 +16,17 @@ class SiteRepository extends ServiceEntityRepository
         parent::__construct($registry, Site::class);
     }
 
+    public function countSite(): array
+    {
+        $result = $this->createQueryBuilder('s')
+            ->select('COUNT(s.id) as total')
+            ->getQuery()
+            ->getSingleScalarResult()
+        ;
+
+        return ['total' => $result];
+    }
+
     //    /**
     //     * @return Site[] Returns an array of Site objects
     //     */

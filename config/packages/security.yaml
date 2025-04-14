@@ -57,6 +57,7 @@ security:
             - ROLE_DIVISION_LIST
             - ROLE_DIVISION_CREATE
             - ROLE_DIVISION_UPDATE
+            - ROLE_STAT_AGENT
         ROLE_SUPER_ADMIN:
             - ROLE_USER_DETAILS
             - ROLE_USER_LIST
@@ -96,6 +97,7 @@ security:
             - ROLE_DIVISION_LIST
             - ROLE_DIVISION_CREATE
             - ROLE_DIVISION_UPDATE
+            - ROLE_STAT_AGENT
         ROLE_RECRUITER:
             - ROLE_USER_DETAILS
             - ROLE_USER_CHANGE_PWD
@@ -125,6 +127,7 @@ security:
             - ROLE_IMPORT_ERROR_ITEM_DETAILS
             - ROLE_DIVISION_DETAILS
             - ROLE_DIVISION_LIST
+            - ROLE_STAT_AGENT
 
 
     firewalls:

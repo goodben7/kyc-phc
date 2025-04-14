@@ -16,6 +16,18 @@ class FunctionTitleRepository extends ServiceEntityRepository
         parent::__construct($registry, FunctionTitle::class);
     }
 
+    public function countFunctionTitle(): array
+    {
+        $result = $this->createQueryBuilder('f')
+            ->select('COUNT(f.id) as total')
+            ->getQuery()
+            ->getSingleScalarResult()
+        ;
+
+        return ['total' => $result];
+    }
+    
+
     //    /**
     //     * @return FunctionTitle[] Returns an array of FunctionTitle objects
     //     */
