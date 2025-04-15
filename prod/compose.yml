@@ -1,7 +1,7 @@
 # Production environment override
 services:
   api:
-    image: ${PHP_IMAGE:-api.undefined.com}:${PHC_VERSION:-latest}
+    image: ${PHP_IMAGE:-api.phc.international}:${PHC_VERSION:-latest}
     depends_on:
       - database
       - queue
@@ -49,7 +49,7 @@ services:
       - host.docker.internal:host-gateway
 
   async:
-    image: ${PHP_IMAGE:-daemon.undefined.com}:${PHC_VERSION:-latest}
+    image: ${PHP_IMAGE:-daemon.phc.international}:${PHC_VERSION:-latest}
     restart: unless-stopped
     volumes:
       - ./.shared/tasks:/app/public/tasks:rw
@@ -71,7 +71,7 @@ services:
       CHECK_PENDING_CASH_COLLECTION_MINUTE: ${CHECK_PENDING_CASH_COLLECTION_MINUTE:-1}
 
   scheduler:
-    image: ${PHP_IMAGE:-daemon.undefined.com}:${PHC_VERSION:-latest}
+    image: ${PHP_IMAGE:-daemon.phc.international}:${PHC_VERSION:-latest}
     restart: unless-stopped
     command: php bin/console messenger:consume scheduler_shared -v --time-limit=3600 --memory-limit=128M
     depends_on:
