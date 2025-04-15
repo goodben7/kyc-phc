@@ -1,31 +1,14 @@
-
-###> symfony/framework-bundle ###
+/.idea
 /.env.local
 /.env.local.php
 /.env.*.local
-/config/secrets/prod/prod.decrypt.private.php
-/public/bundles/
-/public/media/
-/public/import/
-/var/
-/vendor/
-###< symfony/framework-bundle ###
-
-###> phpunit/phpunit ###
-/phpunit.xml
-.phpunit.result.cache
-###< phpunit/phpunit ###
-
-###> symfony/phpunit-bridge ###
-.phpunit.result.cache
-/phpunit.xml
-###< symfony/phpunit-bridge ###
-
-###> symfony/asset-mapper ###
-/public/assets/
-/assets/vendor/
-###< symfony/asset-mapper ###
-
-###> lexik/jwt-authentication-bundle ###
-/config/jwt/*.pem
-###< lexik/jwt-authentication-bundle ###
+/helm/api-platform/charts/*
+!/helm/api-platform/charts/.gitignore
+/.TODO.txt
+/.shared/
+.DS_Store
+*.tar
+*.tar.gz
+/.vscode/
+/.tests.txt
+/.env

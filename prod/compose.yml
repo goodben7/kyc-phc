@@ -1,121 +1,114 @@
+# Production environment override
 services:
   api:
-    build:
-      context: ./api
-      target: app_api_dev
-    restart: unless-stopped
+    image: ${PHP_IMAGE:-api.phc.international}:${PHC_VERSION:-latest}
     depends_on:
       - database
       - queue
+    restart: unless-stopped
     volumes:
       - caddy_data:/data
       - caddy_config:/config
+      - ./.shared/jwt:/app/config/jwt:rw
+      - ./.shared/media:/app/public/media:rw
+      - ./.shared/tasks:/app/public/tasks:rw
+      - ./.shared/bundles:/app/public/bundles:rw
     environment:
-      DATABASE_URL: mysql://${MYSQL_USER:-fenx}:${MYSQL_PASSWORD:-!ChangeMe!}@database:3306/${MYSQL_DATABASE:-phc}?serverVersion=${MYSQL_VERSION:-8.0}
+      APP_ENV: prod
+      DATABASE_URL: mysql://${MYSQL_USER:-fenx}:${MYSQL_PASSWORD:-!ChangeMe!}@database:3306/${MYSQL_DATABASE:-phc}?serverVersion=${MYSQL_VERSION:-8.0}&charset=utf8mb4
       TRUSTED_PROXIES: ${TRUSTED_PROXIES:-127.0.0.0/8,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16}
-      TRUSTED_HOSTS: ^${SERVER_NAME:-example\.com|localhost}|caddy$$
+      TRUSTED_HOSTS: ^${SERVER_NAME}|caddy$$
       MERCURE_URL: ${CADDY_MERCURE_URL:-http://caddy/.well-known/mercure}
-      MERCURE_PUBLIC_URL: https://${SERVER_NAME:-localhost}/.well-known/mercure
-      MERCURE_JWT_SECRET: ${CADDY_MERCURE_JWT_SECRET:-!ChangeThisMercureHubJWTSecretKey!}
-      JWT_PASSPHRASE: ${JWT_PASSPHRASE:-!ChangeThisMercureHubJWTSecretKey!}
-      MAILER_DSN: ${MAILER_DSN:-sendgrid://KEY@default}
-      MAILER_SENDER: ${MAILER_SENDER}
-      MAILER_SENDER_NAME: ${MAILER_SENDER_NAME}
-      ACCESS_AUTH_CODE_TTL: ${ACCESS_AUTH_CODE_TTL:-PT5M}
-      MESSENGER_TRANSPORT_DSN: amqp://guest:guest@queue:5672/%2f/messages
-      SERVER_NAME: ${SERVER_NAME:-localhost}, caddy:80
+      MERCURE_JWT_SECRET: ${CADDY_MERCURE_JWT_SECRET}
+      JWT_PASSPHRASE: ${JWT_PASSPHRASE}
+      MERCURE_PUBLIC_URL: https://${SERVER_NAME}/.well-known/mercure
+      SERVER_NAME: ${SERVER_NAME}, caddy:80
       MERCURE_PUBLISHER_JWT_KEY: ${CADDY_MERCURE_JWT_SECRET}
       MERCURE_SUBSCRIBER_JWT_KEY: ${CADDY_MERCURE_JWT_SECRET}
+      MAILER_DSN: ${MAILER_DSN:-sendgrid://KEY@default}
+      MAILER_SENDER_NAME: ${MAILER_SENDER_NAME}
       MAX_REQUESTS: 500
       PWA_UPSTREAM: host.docker.internal:3000
       APP_SERVER_NAME: ${APP_SERVER_NAME}
       CONFIG_UPSTREAM: host.docker.internal:3001
       CONFIG_SERVER_NAME: ${CONFIG_SERVER_NAME}
       CHECK_PENDING_TASKS_MINUTE: ${CHECK_PENDING_TASKS_MINUTE:-1}
-      MERCURE_EXTRA_DIRECTIVES: demo
+      CHECK_PENDING_CASH_COLLECTION_MINUTE: ${CHECK_PENDING_CASH_COLLECTION_MINUTE:-1}
+      MESSENGER_TRANSPORT_DSN: amqp://guest:guest@queue:5672/%2f/messages
     ports:
-      # HTTP
       - target: 80
         published: ${HTTP_PORT:-80}
         protocol: tcp
-      # HTTPS
       - target: 443
         published: ${HTTPS_PORT:-443}
         protocol: tcp
-      # HTTP/3
       - target: 443
         published: ${HTTP3_PORT:-443}
         protocol: udp
+    extra_hosts:
+      - host.docker.internal:host-gateway
+
+  async:
+    image: ${PHP_IMAGE:-daemon.phc.international}:${PHC_VERSION:-latest}
+    restart: unless-stopped
+    volumes:
+      - ./.shared/tasks:/app/public/tasks:rw
+    command: php bin/console messenger:consume async -v --time-limit=3600 --memory-limit=128M
+    depends_on:
+      - api
+      - database
+      - queue
+    environment:
+      APP_ENV: prod
+      DATABASE_URL: mysql://${MYSQL_USER:-fenx}:${MYSQL_PASSWORD:-!ChangeMe!}@database:3306/${MYSQL_DATABASE:-phc}?serverVersion=${MYSQL_VERSION:-8.0}&charset=utf8mb4
+      MERCURE_URL: ${CADDY_MERCURE_URL:-http://caddy/.well-known/mercure}
+      MERCURE_PUBLIC_URL: https://${SERVER_NAME:-localhost}/.well-known/mercure
+      MERCURE_JWT_SECRET: ${CADDY_MERCURE_JWT_SECRET:-!ChangeThisMercureHubJWTSecretKey!}
+      MAILER_DSN: ${MAILER_DSN:-sendgrid://KEY@default}
+      MAILER_SENDER_NAME: ${MAILER_SENDER_NAME}
+      ACCESS_AUTH_CODE_TTL: ${ACCESS_AUTH_CODE_TTL:-PT5M}
+      MESSENGER_TRANSPORT_DSN: amqp://guest:guest@queue:5672/%2f/messages
+      CHECK_PENDING_CASH_COLLECTION_MINUTE: ${CHECK_PENDING_CASH_COLLECTION_MINUTE:-1}
+
+  scheduler:
+    image: ${PHP_IMAGE:-daemon.phc.international}:${PHC_VERSION:-latest}
+    restart: unless-stopped
+    command: php bin/console messenger:consume scheduler_shared -v --time-limit=3600 --memory-limit=128M
+    depends_on:
+      - api
+      - database
+      - queue
+    environment:
+      APP_ENV: prod
+      DATABASE_URL: mysql://${MYSQL_USER:-fenx}:${MYSQL_PASSWORD:-!ChangeMe!}@database:3306/${MYSQL_DATABASE:-phc}?serverVersion=${MYSQL_VERSION:-8.0}&charset=utf8mb4
+      MERCURE_URL: ${CADDY_MERCURE_URL:-http://caddy/.well-known/mercure}
+      MERCURE_PUBLIC_URL: https://${SERVER_NAME:-localhost}/.well-known/mercure
+      MERCURE_JWT_SECRET: ${CADDY_MERCURE_JWT_SECRET:-!ChangeThisMercureHubJWTSecretKey!}
+      MAILER_DSN: ${MAILER_DSN:-sendgrid://KEY@default}
+      MAILER_SENDER_NAME: ${MAILER_SENDER_NAME}
+      ACCESS_AUTH_CODE_TTL: ${ACCESS_AUTH_CODE_TTL:-PT5M}
+      MESSENGER_TRANSPORT_DSN: amqp://guest:guest@queue:5672/%2f/messages
+      CHECK_PENDING_CASH_COLLECTION_MINUTE: ${CHECK_PENDING_CASH_COLLECTION_MINUTE:-1}
+      CHECK_PENDING_TASKS_MINUTE: ${CHECK_PENDING_TASKS_MINUTE:-1}
+
+  database:
+    image: mysql:${MYSQL_VERSION:-8.0}
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-phc}
+      MYSQL_USER: ${MYSQL_USER:-fenx}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-!ChangeMe!}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-!ChangeMe!}
+    volumes:
+      - ./.shared/db-data:/var/lib/mysql:rw
 
   queue:
     image: rabbitmq:${RABBITMQ_VERSION:-3}-management-alpine
     volumes:
       - queue_data:/var/lib/rabbitmq
       - queue_log:/var/lib/rabbitmq/log
-    ports:
-      - 5672:5672
-      - 15672:15672
-
-  async:
-    build:
-      context: ./api
-      target: app_daemon_dev
-    restart: unless-stopped
-    command: php bin/console messenger:consume async -vvv --time-limit=3600 --memory-limit=128M
-    depends_on:
-      - api
-      - database
-      - queue
-    environment:
-      DATABASE_URL: mysql://${MYSQL_USER:-fenx}:${MYSQL_PASSWORD:-!ChangeMe!}@database:3306/${MYSQL_DATABASE:-phc}?serverVersion=${MYSQL_VERSION:-8.0}
-      MERCURE_URL: ${CADDY_MERCURE_URL:-http://caddy/.well-known/mercure}
-      MERCURE_PUBLIC_URL: https://${SERVER_NAME:-localhost}/.well-known/mercure
-      MERCURE_JWT_SECRET: ${CADDY_MERCURE_JWT_SECRET:-!ChangeThisMercureHubJWTSecretKey!}
-      MAILER_DSN: ${MAILER_DSN:-sendgrid://KEY@default}
-      MAILER_SENDER: ${MAILER_SENDER}
-      MAILER_SENDER_NAME: ${MAILER_SENDER_NAME}
-      APP_SERVER_NAME: ${APP_SERVER_NAME}
-      ACCESS_AUTH_CODE_TTL: ${ACCESS_AUTH_CODE_TTL:-PT5M}
-      MESSENGER_TRANSPORT_DSN: amqp://guest:guest@queue:5672/%2f/messages
-
-  scheduler:
-    build:
-      context: ./api
-      target: app_daemon_dev
-    restart: unless-stopped
-    command: php bin/console messenger:consume scheduler_shared -vvv --time-limit=3600 --memory-limit=128M
-    depends_on:
-      - api
-      - database
-      - queue
-    environment:
-      DATABASE_URL: mysql://${MYSQL_USER:-fenx}:${MYSQL_PASSWORD:-!ChangeMe!}@database:3306/${MYSQL_DATABASE:-phc}?serverVersion=${MYSQL_VERSION:-8.0}
-      MERCURE_URL: ${CADDY_MERCURE_URL:-http://caddy/.well-known/mercure}
-      MERCURE_PUBLIC_URL: https://${SERVER_NAME:-localhost}/.well-known/mercure
-      MERCURE_JWT_SECRET: ${CADDY_MERCURE_JWT_SECRET:-!ChangeThisMercureHubJWTSecretKey!}
-      MAILER_DSN: ${MAILER_DSN:-sendgrid://KEY@default}
-      MAILER_SENDER: ${MAILER_SENDER}
-      MAILER_SENDER_NAME: ${MAILER_SENDER_NAME}
-      APP_SERVER_NAME: ${APP_SERVER_NAME}
-      ACCESS_AUTH_CODE_TTL: ${ACCESS_AUTH_CODE_TTL:-PT5M}
-      MESSENGER_TRANSPORT_DSN: amqp://guest:guest@queue:5672/%2f/messages
-
-  database:
-    image: mysql:${MYSQL_VERSION:-8.0}
-    environment:
-      MYSQL_DATABASE: ${MYSQL_DATABASE:-phc}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-!ChangeMe!}
-      MYSQL_USER: ${MYSQL_USER:-fenx}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-!ChangeMe!}
-    volumes:
-      - db_data:/var/lib/mysql
-    ports:
-      - "3306:3306"
 
 volumes:
-  php_socket:
   caddy_data:
   caddy_config:
   queue_data:
   queue_log:
-  db_data:

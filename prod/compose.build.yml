@@ -1,0 +1,13 @@
+services:
+  api:
+    build:
+      context: ../api
+      target: app_api_prod
+    image: ${PHP_IMAGE:-api.phc.international}:${TAG}
+    platform: linux/amd64
+  daemon:
+    build:
+      context: ../api
+      target: app_daemon_prod
+    image: ${DAEMON_IMAGE:-daemon.phc.international}:${TAG}
+    platform: linux/amd64
