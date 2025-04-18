@@ -14,7 +14,7 @@
 {$CADDY_EXTRA_CONFIG}
 
 # Configuration de l'API Backend (FrankenPHP)
-{$SERVER_NAME:localhost} {
+http://{$SERVER_NAME:localhost} {
     log {
         format filter {
             wrap console
